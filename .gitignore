@@ -1,0 +1,9 @@
+.DS_Store
+*.log
+tmp/
+log/
+storage/*.sqlite3*
+api/storage/*.sqlite3*
+ui/storage/*.sqlite3*
+.byebug_history
+node_modules/

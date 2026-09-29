@@ -1,0 +1,64 @@
+<div class="max-w-md mx-auto py-8">
+  <div class="text-center mb-8">
+    <div class="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-tr from-brand-600 to-indigo-500 shadow-xl shadow-brand-500/20 mb-3">
+      <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+      </svg>
+    </div>
+    <h1 class="text-2xl font-extrabold text-white">Create your PayRail Account</h1>
+    <p class="text-xs text-slate-400 mt-1">Get an instant double-entry wallet pre-funded with $1,000.00 demo credit</p>
+  </div>
+
+  <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
+    <% if @user.errors.any? %>
+      <div class="mb-4 p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-xs text-rose-400">
+        <ul class="list-disc pl-4 space-y-1">
+          <% @user.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <%= form_with model: @user, url: signup_path, local: true, class: "space-y-4" do |f| %>
+      <div>
+        <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Full Name</label>
+        <%= f.text_field :name, placeholder: "e.g. Maya Chen", required: true, class: "w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm placeholder-slate-500 focus:outline-none focus:border-brand-500" %>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Email Address</label>
+        <%= f.email_field :email, placeholder: "maya@example.com", required: true, class: "w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm placeholder-slate-500 focus:outline-none focus:border-brand-500" %>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">PayRail Tag ($handle)</label>
+        <div class="relative">
+          <span class="absolute left-3.5 top-2.5 text-brand-400 font-bold">$</span>
+          <%= f.text_field :payrail_tag, placeholder: "mayachen", required: true, class: "w-full pl-8 pr-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm placeholder-slate-500 font-mono focus:outline-none focus:border-brand-500" %>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Password</label>
+        <%= f.password_field :password, placeholder: "Minimum 6 characters", required: true, class: "w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-brand-500" %>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Confirm Password</label>
+        <%= f.password_field :password_confirmation, required: true, class: "w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-brand-500" %>
+      </div>
+
+      <div class="pt-2">
+        <%= f.submit "Create Account & Fund $1,000", class: "w-full py-2.5 bg-brand-600 hover:bg-brand-500 text-white font-semibold rounded-xl shadow-lg shadow-brand-600/30 transition cursor-pointer text-sm" %>
+      </div>
+    <% end %>
+
+    <div class="mt-6 pt-5 border-t border-slate-800 text-center">
+      <p class="text-xs text-slate-400">
+        Already have an account?
+        <a href="<%= login_path %>" class="text-brand-400 hover:text-brand-300 font-semibold ml-1">Sign In</a>
+      </p>
+    </div>
+  </div>
+</div>

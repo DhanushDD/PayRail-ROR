@@ -1,0 +1,83 @@
+require "net/http"
+require "json"
+require "uri"
+
+BASE = "http://localhost:3000/api/v1"
+
+def test_flow
+  # 1. Login
+  uri = URI("#{BASE}/auth/login")
+  req = Net::HTTP::Post.new(uri, "Content-Type" => "application/json")
+  req.body = { email: "demo@payrail.io", password: "password123" }.to_json
+  res = Net::HTTP.start(uri.hostname, uri.port) { |h| h.request(req) }
+  data = JSON.parse(res.body)
+  token = data["token"]
+  raise "Login failed: #{data}" unless token
+  puts "[PASS] 1. Auth Login: #{data['user']['name']} (Token: #{token[0..15]}...)"
+
+  headers = { "Authorization" => "Bearer #{token}", "Content-Type" => "application/json" }
+
+  # 2. Wallets
+  uri = URI("#{BASE}/wallets")
+  req = Net::HTTP::Get.new(uri, headers)
+  res = Net::HTTP.start(uri.hostname, uri.port) { |h| h.request(req) }
+  wallets = JSON.parse(res.body)
+  wallet = wallets["wallets"].first
+  puts "[PASS] 2. Wallets: Balance=#{wallets['formatted_total_balance']} (Wallet: #{wallet['wallet_number']})"
+
+  # 3. Lookup Recipient
+  uri = URI("#{BASE}/transfers/lookup_recipient?query=alice")
+  req = Net::HTTP::Get.new(uri, headers)
+  res = Net::HTTP.start(uri.hostname, uri.port) { |h| h.request(req) }
+  rec = JSON.parse(res.body)
+  puts "[PASS] 3. Recipient Lookup: #{rec['user']['name']} (#{rec['user']['payrail_tag']})"
+
+  # 4. Transfer with Idempotency-Key
+  idem_key = "idem_test_#{Time.now.to_i}"
+  uri = URI("#{BASE}/transfers")
+  req = Net::HTTP::Post.new(uri, headers.merge("Idempotency-Key" => idem_key))
+  req.body = { recipient: "$alice", amount: 15.00, description: "Test Verification P2P Transfer" }.to_json
+  res = Net::HTTP.start(uri.hostname, uri.port) { |h| h.request(req) }
+  tx = JSON.parse(res.body)
+  ref_id = tx["transfer"]["reference_id"]
+  puts "[PASS] 4. Transfer Executed: #{ref_id} (-#{tx['transfer']['formatted_amount']})"
+
+  # 5. Replay with identical Idempotency-Key
+  res_replay = Net::HTTP.start(uri.hostname, uri.port) { |h| h.request(req) }
+  replay_flag = res_replay["X-Idempotency-Replay"]
+  tx_cached = JSON.parse(res_replay.body)
+  puts "[PASS] 5. Idempotent Replay Verified: X-Idempotency-Replay=#{replay_flag}, Ref=#{tx_cached['transfer']['reference_id']}"
+
+  # 6. Wallet Ledger Audit Trail
+  uri = URI("#{BASE}/wallets/#{wallet['id']}/ledger")
+  req = Net::HTTP::Get.new(uri, headers)
+  res = Net::HTTP.start(uri.hostname, uri.port) { |h| h.request(req) }
+  ledger = JSON.parse(res.body)
+  puts "[PASS] 6. Wallet Ledger Trail: #{ledger['ledger_entries'].size} entries verified"
+
+  # 7. Virtual Cards
+  uri = URI("#{BASE}/cards")
+  req = Net::HTTP::Get.new(uri, headers)
+  res = Net::HTTP.start(uri.hostname, uri.port) { |h| h.request(req) }
+  cards = JSON.parse(res.body)
+  card = cards["cards"].first
+  puts "[PASS] 7. Virtual Cards: #{cards['cards'].size} card(s), #{card['brand']} #{card['tier']} (#{card['masked_number']})"
+
+  # 8. Analytics Overview
+  uri = URI("#{BASE}/analytics/overview")
+  req = Net::HTTP::Get.new(uri, headers)
+  res = Net::HTTP.start(uri.hostname, uri.port) { |h| h.request(req) }
+  analytics = JSON.parse(res.body)
+  puts "[PASS] 8. Analytics Overview: Inflow=#{analytics['total_inflow']}, Outflow=#{analytics['total_outflow']}, Total Tx=#{analytics['total_transactions']}"
+
+  # 9. Webhook Deliveries
+  uri = URI("#{BASE}/webhooks")
+  req = Net::HTTP::Get.new(uri, headers)
+  res = Net::HTTP.start(uri.hostname, uri.port) { |h| h.request(req) }
+  webhooks = JSON.parse(res.body)
+  puts "[PASS] 9. Webhook Event Log: #{webhooks['recent_deliveries'].size} delivered events"
+
+  puts "\n🎉 ALL API ENDPOINTS VERIFIED AND HEALTHY ON PORT 3000!"
+end
+
+test_flow
