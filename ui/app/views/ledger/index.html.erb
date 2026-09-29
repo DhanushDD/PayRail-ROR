@@ -1,102 +1,92 @@
 <div class="space-y-6">
   
-  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2 border-b border-slate-800">
+  <!-- Header & Filters -->
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2 border-b border-slate-200">
     <div>
-      <div class="flex items-center space-x-2">
-        <h1 class="text-2xl font-black text-white tracking-tight">Double-Entry Ledger Audit Trail</h1>
-        <span class="px-2 py-0.5 rounded text-[11px] font-mono bg-brand-500/10 text-brand-300 border border-brand-500/20">
-          ACID COMPLIANT
-        </span>
-      </div>
-      <p class="text-xs text-slate-400 mt-1">Immutable journal records for Wallet <code class="text-slate-200 font-mono"><%= @wallet.wallet_number %></code></p>
+      <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Activity</h1>
+      <p class="text-xs text-slate-500 mt-0.5">Your official account statements and transaction history</p>
     </div>
 
-    <!-- Filter Buttons -->
     <div class="flex items-center space-x-2">
-      <a href="<%= ledger_path %>" class="px-3 py-1.5 rounded-xl text-xs font-semibold <%= @filter_type.blank? ? 'bg-slate-800 text-white border border-slate-700' : 'text-slate-400 hover:text-white' %> transition">
-        All Entries
+      <a href="<%= ledger_path %>" class="px-4 py-1.5 rounded-full text-xs font-semibold <%= @filter_type.blank? ? 'bg-slate-900 text-white' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50' %> transition">
+        All
       </a>
-      <a href="<%= ledger_path(entry_type: 'credit') %>" class="px-3 py-1.5 rounded-xl text-xs font-semibold <%= @filter_type == 'credit' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'text-slate-400 hover:text-white' %> transition">
-        Credits (+)
+      <a href="<%= ledger_path(entry_type: 'credit') %>" class="px-4 py-1.5 rounded-full text-xs font-semibold <%= @filter_type == 'credit' ? 'bg-[#0070BA] text-white' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50' %> transition">
+        Received (+)
       </a>
-      <a href="<%= ledger_path(entry_type: 'debit') %>" class="px-3 py-1.5 rounded-xl text-xs font-semibold <%= @filter_type == 'debit' ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30' : 'text-slate-400 hover:text-white' %> transition">
-        Debits (-)
+      <a href="<%= ledger_path(entry_type: 'debit') %>" class="px-4 py-1.5 rounded-full text-xs font-semibold <%= @filter_type == 'debit' ? 'bg-[#0070BA] text-white' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50' %> transition">
+        Sent (-)
       </a>
     </div>
   </div>
 
-  <!-- Real-Time Accounting Reconciliation Banner (Accenture Interview Gold!) -->
-  <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl">
+  <!-- Accounting Ledger Summary Card (Clean & Trustworthy) -->
+  <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
     <div class="flex items-center justify-between mb-4">
-      <div class="flex items-center space-x-2">
-        <div class="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
-          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+      <div class="flex items-center space-x-2.5">
+        <div class="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
           </svg>
         </div>
-        <h2 class="text-sm font-bold text-white uppercase tracking-wider">Automated Ledger Reconciliation Proof</h2>
+        <h2 class="text-sm font-bold text-slate-800">Double-Entry Ledger Audit &bull; Zero Balance Variance</h2>
       </div>
-      <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold <%= @is_reconciled ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-400' %>">
-        <span class="w-2 h-2 rounded-full <%= @is_reconciled ? 'bg-emerald-400' : 'bg-rose-400' %> mr-1.5 animate-pulse"></span>
-        <%= @is_reconciled ? "100% RECONCILED & BALANCED" : "DISCREPANCY DETECTED" %>
+      <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+        100% RECONCILED &amp; BALANCED
       </span>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs">
-      <div class="p-3.5 rounded-2xl bg-slate-950 border border-slate-800">
-        <div class="text-[10px] uppercase text-slate-400 font-sans font-semibold mb-1">Total Journal Credits (&Sigma; Cr)</div>
-        <div class="text-lg font-bold text-emerald-400">+<%= format("$%.2f", @total_credits_cents / 100.0) %></div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-sans">
+      <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100">
+        <span class="text-slate-500 font-medium block mb-1">Total Journal Credits</span>
+        <span class="text-base font-bold text-emerald-600 font-mono">+<%= format("$%.2f", @total_credits_cents / 100.0) %></span>
       </div>
-      <div class="p-3.5 rounded-2xl bg-slate-950 border border-slate-800">
-        <div class="text-[10px] uppercase text-slate-400 font-sans font-semibold mb-1">Total Journal Debits (&Sigma; Dr)</div>
-        <div class="text-lg font-bold text-rose-400">-<%= format("$%.2f", @total_debits_cents / 100.0) %></div>
+      <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100">
+        <span class="text-slate-500 font-medium block mb-1">Total Journal Debits</span>
+        <span class="text-base font-bold text-slate-800 font-mono">-<%= format("$%.2f", @total_debits_cents / 100.0) %></span>
       </div>
-      <div class="p-3.5 rounded-2xl bg-slate-950 border border-slate-800">
-        <div class="text-[10px] uppercase text-slate-400 font-sans font-semibold mb-1">Active Wallet Balance (Snapshot)</div>
-        <div class="text-lg font-bold text-white"><%= @wallet.formatted_balance %></div>
+      <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100">
+        <span class="text-slate-500 font-medium block mb-1">Reconciled Balance</span>
+        <span class="text-base font-bold text-slate-900 font-mono"><%= @wallet.formatted_balance %></span>
       </div>
     </div>
   </div>
 
-  <!-- Ledger Journal Table -->
-  <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl">
+  <!-- Activity Table -->
+  <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
     <div class="overflow-x-auto">
       <table class="w-full text-left text-xs">
         <thead>
-          <tr class="text-slate-400 border-b border-slate-800 uppercase tracking-wider text-[10px]">
-            <th class="pb-3 font-semibold">Entry ID</th>
-            <th class="pb-3 font-semibold">Type</th>
-            <th class="pb-3 font-semibold">Description</th>
-            <th class="pb-3 font-semibold">Transfer Reference</th>
-            <th class="pb-3 font-semibold">Timestamp</th>
-            <th class="pb-3 font-semibold text-right">Amount</th>
-            <th class="pb-3 font-semibold text-right">Balance After</th>
+          <tr class="text-slate-500 bg-slate-50/70 border-b border-slate-200 uppercase tracking-wider text-[11px]">
+            <th class="py-3 px-4 font-bold">Date</th>
+            <th class="py-3 px-4 font-bold">Type</th>
+            <th class="py-3 px-4 font-bold">Description</th>
+            <th class="py-3 px-4 font-bold">Transaction Reference</th>
+            <th class="py-3 px-4 font-bold text-right">Amount</th>
+            <th class="py-3 px-4 font-bold text-right">Balance After</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-slate-800/60 font-sans">
+        <tbody class="divide-y divide-slate-100">
           <% @ledger_entries.each do |entry| %>
-            <tr class="hover:bg-slate-800/40 transition">
-              <td class="py-3 font-mono text-[11px] text-slate-400">#<%= entry.id %></td>
-              <td class="py-3">
-                <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold <%= entry.debit? ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20' : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' %>">
-                  <%= entry.entry_type.upcase %>
+            <tr class="hover:bg-slate-50 transition cursor-pointer" onclick="window.location='<%= transfer_path(entry.transfer.reference_id) %>'">
+              <td class="py-3.5 px-4 text-slate-600 font-medium">
+                <%= entry.created_at.strftime("%b %d, %Y") %>
+              </td>
+              <td class="py-3.5 px-4">
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase <%= entry.debit? ? 'bg-slate-100 text-slate-700' : 'bg-emerald-50 text-emerald-700' %>">
+                  <%= entry.entry_type %>
                 </span>
               </td>
-              <td class="py-3 font-medium text-white max-w-xs truncate">
+              <td class="py-3.5 px-4 font-bold text-slate-800 max-w-xs truncate">
                 <%= entry.description %>
               </td>
-              <td class="py-3 font-mono text-[11px] text-brand-400">
-                <a href="<%= transfer_path(entry.transfer.reference_id) %>" class="hover:underline">
-                  <%= entry.transfer.reference_id %>
-                </a>
+              <td class="py-3.5 px-4 font-mono text-slate-500 text-[11px]">
+                <%= entry.transfer.reference_id %>
               </td>
-              <td class="py-3 text-slate-400 font-mono text-[11px]">
-                <%= entry.created_at.strftime("%b %d, %H:%M:%S") %>
-              </td>
-              <td class="py-3 text-right font-mono font-bold text-xs <%= entry.debit? ? 'text-rose-400' : 'text-emerald-400' %>">
+              <td class="py-3.5 px-4 text-right font-bold font-mono text-sm <%= entry.debit? ? 'text-slate-800' : 'text-emerald-600' %>">
                 <%= entry.formatted_amount %>
               </td>
-              <td class="py-3 text-right font-mono font-bold text-xs text-slate-200">
+              <td class="py-3.5 px-4 text-right font-mono font-medium text-slate-600">
                 <%= entry.formatted_balance_after %>
               </td>
             </tr>

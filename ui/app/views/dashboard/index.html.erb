@@ -1,358 +1,269 @@
-<div class="space-y-8">
+<div class="space-y-6">
   
-  <!-- Welcome Banner & Quick Metrics Header -->
-  <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 pb-2 border-b border-slate-800">
+  <!-- Top Greeting Banner (PayPal Consumer Experience) -->
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-2">
     <div>
-      <div class="flex items-center space-x-3">
-        <h1 class="text-2xl font-black text-white tracking-tight">Overview</h1>
-        <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-mono bg-brand-500/10 text-brand-300 border border-brand-500/20">
-          <%= @wallet.wallet_number %>
+      <h1 class="text-2xl font-bold text-slate-900 tracking-tight">
+        Good evening, <%= current_user.name.split.first %>
+      </h1>
+      <p class="text-xs text-slate-500 mt-0.5 flex items-center space-x-1.5">
+        <span>Personal Account</span>
+        <span>&bull;</span>
+        <span class="font-mono text-[#0070BA] font-semibold"><%= current_user.payrail_tag %></span>
+        <span>&bull;</span>
+        <span class="inline-flex items-center text-emerald-600 font-semibold text-[11px]">
+          <svg class="w-3.5 h-3.5 mr-0.5" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+          </svg>
+          Verified
         </span>
-      </div>
-      <p class="text-xs text-slate-400 mt-1">
-        Connected as <strong class="text-slate-200"><%= current_user.name %></strong> (<code class="text-brand-400 font-mono"><%= current_user.payrail_tag %></code>)
       </p>
     </div>
-
-    <!-- Quick Action Toolbar -->
-    <div class="flex items-center space-x-2.5">
-      <button onclick="document.getElementById('depositModal').classList.remove('hidden')" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 hover:border-slate-600 transition flex items-center space-x-1.5 shadow-sm">
-        <svg class="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-        </svg>
-        <span>Add Funds</span>
-      </button>
-
-      <a href="<%= new_transfer_path %>" class="px-4 py-2 rounded-xl text-xs font-bold bg-brand-600 hover:bg-brand-500 text-white transition flex items-center space-x-1.5 shadow-lg shadow-brand-600/30">
-        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-        </svg>
-        <span>Send Money</span>
-      </a>
-
-      <a href="<%= payment_links_path %>" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 hover:border-slate-600 transition flex items-center space-x-1.5 shadow-sm">
-        <svg class="w-4 h-4 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-        </svg>
-        <span>Request / Link</span>
-      </a>
-    </div>
   </div>
 
-  <!-- Primary Financial Cards Grid (Wallet, Card, Inflow/Outflow) -->
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6">
+  <!-- Main 2-Column Grid (PayPal Standard Layout) -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
-    <!-- 1. Total Wallet Balance Card (5 cols) -->
-    <div class="lg:col-span-5 bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950/40 border border-slate-800 rounded-3xl p-6 shadow-xl relative overflow-hidden flex flex-col justify-between">
-      <div class="absolute -right-8 -top-8 w-36 h-36 bg-brand-500/10 rounded-full blur-2xl pointer-events-none"></div>
-
-      <div>
-        <div class="flex items-center justify-between text-xs text-slate-400 mb-2">
-          <span class="font-semibold uppercase tracking-wider">Primary Wallet (<%= @wallet.currency %>)</span>
-          <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-            Real-Time Settlement
-          </span>
-        </div>
-        <div class="text-4xl lg:text-5xl font-black text-white tracking-tight font-mono">
-          <%= @wallet.formatted_balance %>
-        </div>
-        <div class="mt-2 text-xs text-slate-400 flex items-center space-x-2">
-          <span>Available to send immediately</span>
-          <span>&bull;</span>
-          <span class="text-slate-300 font-mono">Daily Limit: $10,000.00</span>
-        </div>
-      </div>
-
-      <!-- Quick Metrics Pill Row -->
-      <div class="mt-6 pt-6 border-t border-slate-800/80 grid grid-cols-2 gap-4">
-        <div class="bg-slate-950/50 p-3 rounded-2xl border border-slate-800/60">
-          <div class="text-[11px] font-semibold text-slate-400 mb-0.5">Total Inflow (+)</div>
-          <div class="text-base font-bold text-emerald-400 font-mono">
-            +<%= format("$%.2f", @inflow_cents / 100.0) %>
-          </div>
-        </div>
-        <div class="bg-slate-950/50 p-3 rounded-2xl border border-slate-800/60">
-          <div class="text-[11px] font-semibold text-slate-400 mb-0.5">Total Outflow (-)</div>
-          <div class="text-base font-bold text-rose-400 font-mono">
-            -<%= format("$%.2f", @outflow_cents / 100.0) %>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 2. Virtual Debit Card Visualizer (4 cols) -->
-    <div class="lg:col-span-4">
-      <% if @virtual_card %>
-        <div class="bg-gradient-to-tr from-slate-900 via-zinc-900 to-slate-800 border border-slate-700/80 rounded-3xl p-6 shadow-2xl relative overflow-hidden flex flex-col justify-between h-full group hover:border-slate-600 transition">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center space-x-2">
-              <span class="text-xs font-extrabold tracking-widest text-slate-300 uppercase">PayRail</span>
-              <span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-400/20 text-amber-300 font-mono font-bold"><%= @virtual_card.tier %></span>
+    <!-- Left Column (7 cols): Balance Tile + Send Again + Recent Activity -->
+    <div class="lg:col-span-7 space-y-6">
+      
+      <!-- 1. PayPal-Style Balance Tile -->
+      <div class="bg-white rounded-2xl p-6 sm:p-7 border border-slate-200 shadow-sm relative">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center space-x-2">
+            <div class="w-6 h-6 rounded-full bg-blue-50 text-[#0070BA] flex items-center justify-center font-bold text-xs">
+              $
             </div>
-            <!-- Contactless Icon -->
-            <svg class="w-5 h-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0" />
-            </svg>
+            <h2 class="text-sm font-bold text-slate-700 uppercase tracking-wide">PayRail Balance</h2>
           </div>
+          <span class="text-xs font-semibold text-slate-500 font-mono"><%= @wallet.currency %></span>
+        </div>
 
-          <div class="my-6">
-            <div class="flex items-center space-x-3 mb-2">
-              <!-- Golden EMV Chip -->
-              <div class="w-9 h-7 rounded bg-gradient-to-tr from-amber-400 to-amber-200 border border-amber-500/50 shadow-inner flex items-center justify-center">
-                <div class="w-7 h-5 border border-amber-600/40 rounded-sm"></div>
+        <div class="flex items-baseline space-x-2 my-2">
+          <span class="text-4xl sm:text-5xl font-extrabold text-slate-900 tracking-tight font-sans">
+            <%= @wallet.formatted_balance %>
+          </span>
+          <span class="text-sm font-semibold text-slate-500">Available</span>
+        </div>
+
+        <p class="text-xs text-slate-500 mb-6">
+          Estimated total including all linked wallets and accounts
+        </p>
+
+        <!-- PayPal Standard Pill Buttons -->
+        <div class="flex flex-wrap items-center gap-3 pt-4 border-t border-slate-100">
+          <button onclick="document.getElementById('depositModal').classList.remove('hidden')" class="px-6 py-2.5 rounded-full text-xs font-bold bg-[#0070BA] hover:bg-[#003087] text-white shadow-sm transition">
+            Add Money
+          </button>
+          
+          <a href="<%= new_transfer_path %>" class="px-6 py-2 rounded-full text-xs font-bold border-2 border-[#0070BA] text-[#0070BA] hover:bg-blue-50 transition">
+            Send Payment
+          </a>
+
+          <a href="<%= new_transfer_path %>" class="px-5 py-2 rounded-full text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition">
+            Request
+          </a>
+        </div>
+      </div>
+
+      <!-- 2. "Send Again" / Quick Pay Contacts (Paytm & PayPal signature feature) -->
+      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-sm font-bold text-slate-800">Send Again</h3>
+          <a href="<%= new_transfer_path %>" class="text-xs font-semibold text-[#0070BA] hover:underline">See all</a>
+        </div>
+
+        <div class="flex items-center space-x-5 overflow-x-auto pb-2">
+          <!-- Add New Quick Button -->
+          <a href="<%= new_transfer_path %>" class="flex flex-col items-center space-y-1.5 flex-shrink-0 group">
+            <div class="w-13 h-13 rounded-full border-2 border-dashed border-slate-300 group-hover:border-[#0070BA] flex items-center justify-center text-slate-400 group-hover:text-[#0070BA] transition">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+            </div>
+            <span class="text-[11px] font-semibold text-slate-600 group-hover:text-[#0070BA]">Send to new</span>
+          </a>
+
+          <!-- Peers Avatars -->
+          <% @other_users.each do |peer| %>
+            <a href="<%= new_transfer_path(recipient: peer.payrail_tag) %>" class="flex flex-col items-center space-y-1.5 flex-shrink-0 group">
+              <div class="w-13 h-13 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-sm group-hover:ring-2 group-hover:ring-[#0070BA] transition" style="background-color: <%= peer.avatar_color %>">
+                <%= peer.name.first(2).upcase %>
               </div>
-            </div>
-            <div class="text-lg lg:text-xl font-mono font-bold tracking-widest text-slate-100">
-              <%= @virtual_card.masked_number %>
-            </div>
-          </div>
-
-          <div class="flex items-end justify-between text-xs">
-            <div>
-              <div class="text-[9px] text-slate-400 uppercase tracking-wider">Cardholder</div>
-              <div class="font-bold text-white tracking-wider"><%= @virtual_card.cardholder_name %></div>
-            </div>
-            <div>
-              <div class="text-[9px] text-slate-400 uppercase tracking-wider">Expires</div>
-              <div class="font-mono font-bold text-slate-200"><%= @virtual_card.formatted_expiry %></div>
-            </div>
-            <div>
-              <%= button_to toggle_freeze_card_path(@virtual_card), method: :patch, class: "px-2.5 py-1 rounded-lg text-[10px] font-bold #{@virtual_card.active? ? 'bg-slate-800 text-slate-300 hover:bg-slate-700' : 'bg-rose-500/20 text-rose-400 border border-rose-500/30'} transition" do %>
-                <%= @virtual_card.active? ? "Freeze Card" : "Unfreeze" %>
-              <% end %>
-            </div>
-          </div>
-        </div>
-      <% else %>
-        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 flex flex-col items-center justify-center text-center h-full">
-          <p class="text-xs text-slate-400 mb-3">No virtual card issued yet</p>
-          <%= button_to "Issue Instant Virtual Card", cards_path, method: :post, class: "px-4 py-2 bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold rounded-xl" %>
-        </div>
-      <% end %>
-    </div>
-
-    <!-- 3. Quick Recruiter Insights (3 cols) -->
-    <div class="lg:col-span-3 bg-slate-900 border border-slate-800 rounded-3xl p-6 flex flex-col justify-between">
-      <div>
-        <div class="flex items-center space-x-2 text-xs font-bold text-slate-300 mb-3">
-          <span class="w-2 h-2 rounded-full bg-brand-400"></span>
-          <span>SYSTEM ARCHITECTURE</span>
-        </div>
-        <div class="space-y-2.5 text-xs text-slate-400">
-          <div class="p-2.5 rounded-xl bg-slate-950/60 border border-slate-800">
-            <span class="font-bold text-white block">Double-Entry Ledger</span>
-            <span>Every transfer creates zero-sum debit + credit entries.</span>
-          </div>
-          <div class="p-2.5 rounded-xl bg-slate-950/60 border border-slate-800">
-            <span class="font-bold text-white block">Concurrency Protection</span>
-            <span>Ordered pessimistic locking eliminates deadlocks & double-spending.</span>
-          </div>
+              <span class="text-[11px] font-semibold text-slate-700 group-hover:text-[#0070BA] truncate max-w-[64px] text-center">
+                <%= peer.name.split.first %>
+              </span>
+            </a>
+          <% end %>
         </div>
       </div>
 
-      <div class="pt-4 border-t border-slate-800">
-        <a href="<%= developer_path %>" class="text-xs font-bold text-brand-400 hover:text-brand-300 flex items-center justify-between group">
-          <span>View API & Webhooks</span>
-          <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-          </svg>
-        </a>
-      </div>
-    </div>
+      <!-- 3. Recent Activity (PayPal statement style) -->
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="p-6 border-b border-slate-100 flex items-center justify-between">
+          <div>
+            <h3 class="text-base font-bold text-slate-900">Recent Activity</h3>
+            <p class="text-xs text-slate-500 mt-0.5">Your latest payments, deposits, and transfers</p>
+          </div>
+          <a href="<%= ledger_path %>" class="text-xs font-bold text-[#0070BA] hover:underline">
+            View all &rarr;
+          </a>
+        </div>
 
-  </div>
-
-  <!-- Fast Send Bar (Direct Quick-Transfer) -->
-  <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-lg">
-    <div class="flex items-center justify-between mb-3">
-      <span class="text-xs font-bold text-slate-300 uppercase tracking-wider">Fast Send to Peers</span>
-      <span class="text-[11px] text-slate-400">Instant Settlement &bull; Zero Fees</span>
-    </div>
-
-    <div class="flex flex-wrap items-center gap-2 mb-3">
-      <% @other_users.each do |peer| %>
-        <button type="button" onclick="setQuickRecipient('<%= peer.payrail_tag %>')" class="flex items-center space-x-2 px-3 py-1.5 rounded-xl bg-slate-950 hover:bg-slate-800 border border-slate-800 text-xs font-medium text-slate-200 transition group">
-          <span class="w-5 h-5 rounded-full flex items-center justify-center font-bold text-[9px] text-white" style="background-color: <%= peer.avatar_color %>">
-            <%= peer.name.first(2).upcase %>
-          </span>
-          <span class="group-hover:text-brand-300"><%= peer.name.split.first %></span>
-          <span class="text-slate-400 font-mono text-[10px]"><%= peer.payrail_tag %></span>
-        </button>
-      <% end %>
-    </div>
-
-    <%= form_with url: transfers_path, method: :post, local: true, class: "grid grid-cols-1 sm:grid-cols-12 gap-3" do |f| %>
-      <div class="sm:col-span-5 relative">
-        <%= f.text_field :recipient, id: "quickRecipientInput", placeholder: "Recipient $tag or email (e.g. $alice)", required: true, class: "w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-xs font-mono placeholder-slate-500 focus:outline-none focus:border-brand-500" %>
-      </div>
-      <div class="sm:col-span-3 relative">
-        <span class="absolute left-3 top-2.5 text-slate-400 text-xs font-bold">$</span>
-        <%= f.number_field :amount, step: 0.01, min: 0.50, placeholder: "0.00", required: true, class: "w-full pl-7 pr-3 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-xs font-mono font-bold focus:outline-none focus:border-brand-500" %>
-      </div>
-      <div class="sm:col-span-4">
-        <%= f.submit "Send Money Now", class: "w-full py-2.5 bg-brand-600 hover:bg-brand-500 text-white font-bold text-xs rounded-xl shadow-md transition cursor-pointer" %>
-      </div>
-    <% end %>
-  </div>
-
-  <!-- Recent Transactions & Double-Entry Ledger Inspector -->
-  <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl">
-    <div class="flex items-center justify-between mb-6">
-      <div>
-        <h2 class="text-lg font-bold text-white tracking-tight">Recent Transactions</h2>
-        <p class="text-xs text-slate-400">Click any transaction to inspect its balanced Double-Entry Ledger journal</p>
-      </div>
-      <a href="<%= ledger_path %>" class="text-xs font-bold text-brand-400 hover:text-brand-300 flex items-center space-x-1">
-        <span>Full Audit Ledger</span>
-        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-        </svg>
-      </a>
-    </div>
-
-    <% if @transfers.any? %>
-      <div class="overflow-x-auto">
-        <table class="w-full text-left text-xs">
-          <thead>
-            <tr class="text-slate-400 border-b border-slate-800 uppercase tracking-wider text-[10px]">
-              <th class="pb-3 font-semibold">Reference</th>
-              <th class="pb-3 font-semibold">Counterparty / Description</th>
-              <th class="pb-3 font-semibold">Category</th>
-              <th class="pb-3 font-semibold">Date</th>
-              <th class="pb-3 font-semibold">Status</th>
-              <th class="pb-3 font-semibold text-right">Amount</th>
-              <th class="pb-3 font-semibold text-right">Ledger Audit</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-slate-800/60 font-sans">
+        <% if @transfers.any? %>
+          <div class="divide-y divide-slate-100">
             <% @transfers.each do |tx| %>
               <% direction = tx.direction_for(@wallet) %>
               <% is_credit = direction == "credit" %>
-              <tr class="hover:bg-slate-800/40 transition group cursor-pointer" onclick="openLedgerModal('<%= tx.reference_id %>')">
-                <td class="py-3.5 font-mono text-[11px] text-slate-400 group-hover:text-brand-400 transition">
-                  <%= tx.reference_id %>
-                </td>
-                <td class="py-3.5">
-                  <div class="font-bold text-white group-hover:text-brand-300 transition">
-                    <%= tx.description %>
-                  </div>
-                  <div class="text-[11px] text-slate-400">
-                    <% if is_credit %>
-                      From: <span class="text-slate-300 font-mono"><%= tx.sender_user ? tx.sender_user.payrail_tag : "Payment Rail Deposit" %></span>
+              <div class="p-4 sm:px-6 hover:bg-slate-50 transition cursor-pointer flex items-center justify-between" onclick="window.location='<%= transfer_path(tx.reference_id) %>'">
+                <div class="flex items-center space-x-3.5">
+                  <!-- Circular Category Icon -->
+                  <div class="w-10 h-10 rounded-full <%= is_credit ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-600' %> flex items-center justify-center flex-shrink-0">
+                    <% if tx.category == 'dining' %>
+                      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                      </svg>
+                    <% elsif tx.category == 'deposit' %>
+                      <svg class="w-5 h-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                      </svg>
                     <% else %>
-                      To: <span class="text-slate-300 font-mono"><%= tx.recipient_user ? tx.recipient_user.payrail_tag : "External" %></span>
+                      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                      </svg>
                     <% end %>
                   </div>
-                </td>
-                <td class="py-3.5">
-                  <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-800 text-slate-300 capitalize border border-slate-700">
-                    <%= tx.category %>
-                  </span>
-                </td>
-                <td class="py-3.5 text-slate-400">
-                  <%= tx.created_at.strftime("%b %d, %H:%M") %>
-                </td>
-                <td class="py-3.5">
-                  <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1"></span>
+
+                  <div>
+                    <div class="text-sm font-bold text-slate-800">
+                      <% if is_credit %>
+                        <%= tx.sender_user ? tx.sender_user.name : "Deposit from Bank Rail" %>
+                      <% else %>
+                        <%= tx.recipient_user ? tx.recipient_user.name : "Payment" %>
+                      <% end %>
+                    </div>
+                    <div class="text-xs text-slate-500 flex items-center space-x-2">
+                      <span><%= tx.created_at.strftime("%b %d") %></span>
+                      <span>&bull;</span>
+                      <span class="capitalize"><%= tx.description.presence || tx.category %></span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="text-right">
+                  <div class="text-sm font-bold <%= is_credit ? 'text-emerald-600' : 'text-slate-900' %>">
+                    <%= is_credit ? "+" : "-" %><%= tx.formatted_amount %>
+                  </div>
+                  <div class="text-[11px] text-slate-400 font-medium">
                     <%= tx.status.titleize %>
-                  </span>
-                </td>
-                <td class="py-3.5 text-right font-mono font-bold text-sm <%= is_credit ? 'text-emerald-400' : 'text-slate-100' %>">
-                  <%= is_credit ? "+" : "-" %><%= tx.formatted_amount %>
-                </td>
-                <td class="py-3.5 text-right">
-                  <span class="text-[11px] font-semibold text-brand-400 group-hover:underline">Inspect &rarr;</span>
-                </td>
-              </tr>
+                  </div>
+                </div>
+              </div>
             <% end %>
-          </tbody>
-        </table>
+          </div>
+        <% else %>
+          <div class="text-center py-12">
+            <p class="text-slate-500 text-xs">No recent transactions to display.</p>
+          </div>
+        <% end %>
       </div>
-    <% else %>
-      <div class="text-center py-12">
-        <p class="text-slate-400 text-xs">No transactions recorded yet.</p>
-        <a href="<%= new_transfer_path %>" class="mt-3 inline-block px-4 py-2 bg-brand-600 text-white text-xs font-bold rounded-xl">Make your first payment</a>
+
+    </div>
+
+    <!-- Right Column (5 cols): Banks & Cards + Fast Send Widget -->
+    <div class="lg:col-span-5 space-y-6">
+      
+      <!-- 1. Banks and Cards (PayPal Signature Box) -->
+      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4">
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-bold text-slate-900">Banks and cards</h3>
+          <a href="<%= cards_path %>" class="text-xs font-semibold text-[#0070BA] hover:underline">Manage</a>
+        </div>
+
+        <!-- Realistic Virtual Debit Card -->
+        <% if @virtual_card %>
+          <div class="bg-gradient-to-tr from-[#003087] via-[#004B99] to-[#0070BA] rounded-2xl p-5 text-white shadow-md relative overflow-hidden">
+            <div class="flex items-center justify-between mb-4">
+              <span class="text-xs font-black tracking-widest uppercase">PayRail</span>
+              <span class="text-[10px] px-2 py-0.5 rounded-full bg-white/20 font-bold uppercase"><%= @virtual_card.brand %></span>
+            </div>
+
+            <div class="my-3">
+              <div class="w-8 h-6 rounded bg-amber-300/80 border border-amber-400/60 mb-2"></div>
+              <div class="text-base font-mono font-bold tracking-wider">
+                <%= @virtual_card.masked_number %>
+              </div>
+            </div>
+
+            <div class="flex items-end justify-between text-xs pt-2 border-t border-white/20">
+              <div>
+                <div class="text-[9px] uppercase tracking-wider text-slate-200">Cardholder</div>
+                <div class="font-bold"><%= @virtual_card.cardholder_name %></div>
+              </div>
+              <div>
+                <div class="text-[9px] uppercase tracking-wider text-slate-200">Expires</div>
+                <div class="font-mono font-bold"><%= @virtual_card.formatted_expiry %></div>
+              </div>
+              <div>
+                <%= button_to toggle_freeze_card_path(@virtual_card), method: :patch, class: "px-2.5 py-1 rounded-full text-[10px] font-bold #{@virtual_card.active? ? 'bg-white/20 hover:bg-white/30 text-white' : 'bg-rose-500 text-white'} transition" do %>
+                  <%= @virtual_card.active? ? "Active" : "Frozen" %>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+
+        <!-- Linked Bank Account Tile -->
+        <div class="p-3.5 rounded-xl border border-slate-200 hover:border-slate-300 transition flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <div class="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-600">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+              </svg>
+            </div>
+            <div>
+              <div class="text-xs font-bold text-slate-800">Chase Bank Checking</div>
+              <div class="text-[11px] text-slate-500 font-mono">•••• 4021 &bull; Direct Deposit</div>
+            </div>
+          </div>
+          <span class="text-[11px] font-bold text-emerald-600">Linked</span>
+        </div>
+
+        <div class="pt-2 text-center">
+          <button onclick="document.getElementById('depositModal').classList.remove('hidden')" class="text-xs font-bold text-[#0070BA] hover:underline flex items-center justify-center space-x-1 w-full">
+            <span>+ Link a card or bank</span>
+          </button>
+        </div>
       </div>
-    <% end %>
+
+      <!-- 2. Fast Payment Box (PayPal / Paytm Send Money tile) -->
+      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+        <h3 class="text-sm font-bold text-slate-900 mb-1">Quick Send</h3>
+        <p class="text-xs text-slate-500 mb-4">Pay anyone with their $tag or email instantly</p>
+
+        <%= form_with url: transfers_path, method: :post, local: true, class: "space-y-3" do |f| %>
+          <div>
+            <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1">To</label>
+            <%= f.text_field :recipient, placeholder: "$alice, $bob, or user@payrail.io", required: true, class: "w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-800 text-xs font-mono placeholder-slate-400 focus:outline-none focus:border-[#0070BA] focus:bg-white" %>
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1">Amount ($)</label>
+            <%= f.number_field :amount, step: 0.01, min: 0.50, placeholder: "0.00", required: true, class: "w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-base font-bold font-mono placeholder-slate-400 focus:outline-none focus:border-[#0070BA] focus:bg-white" %>
+          </div>
+
+          <div>
+            <%= f.text_field :description, placeholder: "What is this for? (optional)", class: "w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-800 text-xs placeholder-slate-400 focus:outline-none focus:border-[#0070BA] focus:bg-white" %>
+          </div>
+
+          <div class="pt-2">
+            <%= f.submit "Send Money Now", class: "w-full py-2.5 bg-[#0070BA] hover:bg-[#003087] text-white font-bold rounded-full text-xs shadow-sm transition cursor-pointer" %>
+          </div>
+        <% end %>
+      </div>
+
+    </div>
+
   </div>
 
 </div>
-
-<!-- Modal for Inspecting Double-Entry Ledger Audit -->
-<div id="ledgerModal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
-  <div class="bg-slate-900 border border-slate-700 rounded-3xl max-w-lg w-full p-6 shadow-2xl relative">
-    <button onclick="document.getElementById('ledgerModal').classList.add('hidden')" class="absolute top-4 right-4 text-slate-400 hover:text-white p-1">
-      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-      </svg>
-    </button>
-
-    <div class="flex items-center space-x-3 mb-4">
-      <div class="w-10 h-10 rounded-xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center text-brand-400">
-        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-        </svg>
-      </div>
-      <div>
-        <h3 class="text-base font-bold text-white">Double-Entry Ledger Audit</h3>
-        <p class="text-xs text-slate-400 font-mono" id="modalTxRef">Loading reference...</p>
-      </div>
-    </div>
-
-    <div class="space-y-3 mb-5" id="modalLedgerContent">
-      <div class="text-center py-6 text-xs text-slate-400">Loading audit records...</div>
-    </div>
-
-    <div class="p-3.5 rounded-2xl bg-slate-950/70 border border-slate-800 text-[11px] text-slate-400">
-      <div class="flex items-center justify-between font-mono font-bold text-emerald-400">
-        <span>Zero-Sum Audit:</span>
-        <span>Debits - Credits = $0.00 (Balanced)</span>
-      </div>
-    </div>
-
-    <div class="mt-5">
-      <button onclick="document.getElementById('ledgerModal').classList.add('hidden')" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-semibold rounded-xl text-xs transition">
-        Close Audit View
-      </button>
-    </div>
-  </div>
-</div>
-
-<script>
-  function setQuickRecipient(tag) {
-    document.getElementById('quickRecipientInput').value = tag;
-  }
-
-  function openLedgerModal(referenceId) {
-    const modal = document.getElementById('ledgerModal');
-    const refTitle = document.getElementById('modalTxRef');
-    const content = document.getElementById('modalLedgerContent');
-
-    refTitle.textContent = referenceId;
-    modal.classList.remove('hidden');
-
-    fetch(`/transfers/${referenceId}`, { headers: { 'Accept': 'application/json' } })
-      .catch(() => {
-        // Fallback: render formatted mockup from page
-      });
-
-    // Provide immediate rich display
-    content.innerHTML = `
-      <div class="p-3 rounded-xl bg-slate-950 border border-slate-800">
-        <div class="flex items-center justify-between text-xs mb-1">
-          <span class="font-bold text-rose-400 font-mono">1. DEBIT JOURNAL ENTRY</span>
-          <span class="px-2 py-0.5 rounded text-[10px] bg-rose-500/10 text-rose-400 font-bold">DEBIT</span>
-        </div>
-        <div class="text-xs text-slate-300">Deducted from Sender Wallet under ACID transaction with row lock.</div>
-      </div>
-      <div class="p-3 rounded-xl bg-slate-950 border border-slate-800">
-        <div class="flex items-center justify-between text-xs mb-1">
-          <span class="font-bold text-emerald-400 font-mono">2. CREDIT JOURNAL ENTRY</span>
-          <span class="px-2 py-0.5 rounded text-[10px] bg-emerald-500/10 text-emerald-400 font-bold">CREDIT</span>
-        </div>
-        <div class="text-xs text-slate-300">Credited to Recipient Wallet. Balance snapshot permanently archived.</div>
-      </div>
-    `;
-  }
-</script>

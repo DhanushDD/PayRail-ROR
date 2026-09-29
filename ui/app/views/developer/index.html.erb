@@ -1,167 +1,86 @@
-<div class="space-y-8">
+<div class="space-y-6">
   
-  <!-- Recruiter Header Banner -->
-  <div class="bg-gradient-to-r from-slate-900 via-indigo-950/40 to-slate-900 border border-brand-500/30 rounded-3xl p-6 lg:p-8 shadow-2xl relative overflow-hidden">
-    <div class="absolute -right-10 -bottom-10 w-60 h-60 bg-brand-500/10 rounded-full blur-3xl pointer-events-none"></div>
-
-    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-      <div>
-        <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 mb-3">
-          <span>ACCENTURE INTERVIEW SHOWCASE</span>
-          <span>&bull;</span>
-          <span class="font-mono">CUSTOM SOFTWARE ENGINEER ROLE</span>
-        </div>
-        <h1 class="text-2xl lg:text-3xl font-black text-white tracking-tight">Enterprise Architecture & Developer API</h1>
-        <p class="text-xs text-slate-300 mt-2 max-w-2xl leading-relaxed">
-          PayRail was engineered to demonstrate high-concurrency payment processing, strict double-entry ledger bookkeeping, and bulletproof idempotency built with decoupled Ruby on Rails 8 services.
-        </p>
+  <!-- Developer Header -->
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2 border-b border-slate-200">
+    <div>
+      <div class="flex items-center space-x-2">
+        <h1 class="text-2xl font-bold text-slate-900 tracking-tight">PayRail Developer Portal</h1>
+        <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-50 text-[#0070BA] border border-blue-200">
+          REST API v1
+        </span>
       </div>
-
-      <div class="flex flex-col sm:flex-row items-center gap-3">
-        <a href="#interactive-runner" class="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-bold text-xs shadow-lg shadow-brand-600/30 transition text-center">
-          Test Live API in Browser
-        </a>
-      </div>
+      <p class="text-xs text-slate-500 mt-0.5">Integration keys, interactive testing console, and webhook event monitoring</p>
     </div>
   </div>
 
-  <!-- Key Architecture Principles Grid (Interview Talking Points) -->
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-lg">
-      <div class="w-8 h-8 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center mb-3">
-        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-        </svg>
-      </div>
-      <h3 class="text-sm font-bold text-white mb-1">Double-Entry Bookkeeping</h3>
-      <p class="text-[11px] text-slate-400 leading-relaxed">
-        Every movement of money creates balanced debit and credit entries. Mathematically guarantees zero currency creation or loss: &Sigma; Debits == &Sigma; Credits.
-      </p>
-    </div>
-
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-lg">
-      <div class="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center mb-3">
-        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-        </svg>
-      </div>
-      <h3 class="text-sm font-bold text-white mb-1">Pessimistic Concurrency Lock</h3>
-      <p class="text-[11px] text-slate-400 leading-relaxed">
-        Row locks acquired in sorted wallet ID order (<code class="text-amber-400 font-mono">with_lock</code>) prevent deadlocks and eliminate double-spending under concurrent API traffic.
-      </p>
-    </div>
-
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-lg">
-      <div class="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center mb-3">
-        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-        </svg>
-      </div>
-      <h3 class="text-sm font-bold text-white mb-1">Idempotent Execution</h3>
-      <p class="text-[11px] text-slate-400 leading-relaxed">
-        HTTP headers with <code class="text-emerald-400 font-mono">Idempotency-Key</code> cache response payloads, guaranteeing exactly-once execution during network timeouts.
-      </p>
-    </div>
-
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-lg">
-      <div class="w-8 h-8 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center mb-3">
-        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-        </svg>
-      </div>
-      <h3 class="text-sm font-bold text-white mb-1">Decoupled API &amp; UI</h3>
-      <p class="text-[11px] text-slate-400 leading-relaxed">
-        Clean physical separation: <code class="text-purple-300 font-mono">api/</code> runs as a stateless headless REST service while <code class="text-purple-300 font-mono">ui/</code> serves the responsive portal.
-      </p>
-    </div>
-  </div>
-
-  <!-- Interactive In-Browser API Test Runner -->
-  <div id="interactive-runner" class="bg-slate-900 border border-slate-800 rounded-3xl p-6 lg:p-8 shadow-xl">
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+  <!-- Interactive Test Console (Stripe/PayPal style) -->
+  <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-7 shadow-sm">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-5">
       <div>
-        <h2 class="text-lg font-bold text-white tracking-tight">Interactive Live API Console</h2>
-        <p class="text-xs text-slate-400">Click below to dispatch real authenticated API requests and view live JSON payloads:</p>
+        <h2 class="text-base font-bold text-slate-900">Interactive API Console</h2>
+        <p class="text-xs text-slate-500">Dispatch live authenticated requests to the PayRail REST Engine</p>
       </div>
       <div class="flex items-center space-x-2">
-        <button onclick="runApiTest('wallets')" class="px-3.5 py-1.5 rounded-xl bg-slate-950 hover:bg-slate-800 border border-slate-700 text-xs font-mono font-semibold text-brand-300 transition">
+        <button onclick="runApiTest('wallets')" class="px-4 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-mono font-bold transition">
           GET /wallets
         </button>
-        <button onclick="runApiTest('transfers')" class="px-3.5 py-1.5 rounded-xl bg-slate-950 hover:bg-slate-800 border border-slate-700 text-xs font-mono font-semibold text-emerald-300 transition">
+        <button onclick="runApiTest('transfers')" class="px-4 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-mono font-bold transition">
           GET /transfers
         </button>
-        <button onclick="runApiTest('analytics')" class="px-3.5 py-1.5 rounded-xl bg-slate-950 hover:bg-slate-800 border border-slate-700 text-xs font-mono font-semibold text-purple-300 transition">
+        <button onclick="runApiTest('analytics')" class="px-4 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-mono font-bold transition">
           GET /analytics
         </button>
       </div>
     </div>
 
-    <!-- Terminal Code Box -->
-    <div class="rounded-2xl bg-slate-950 border border-slate-800 p-4 font-mono text-xs overflow-x-auto shadow-inner">
-      <div class="flex items-center justify-between pb-3 border-b border-slate-800/80 mb-3 text-slate-400">
-        <div class="flex items-center space-x-2">
-          <span class="w-3 h-3 rounded-full bg-rose-500/80"></span>
-          <span class="w-3 h-3 rounded-full bg-amber-500/80"></span>
-          <span class="w-3 h-3 rounded-full bg-emerald-500/80"></span>
-          <span class="text-[11px] text-slate-500 ml-2" id="consoleEndpoint">Ready &bull; Click any test button above</span>
-        </div>
-        <span class="text-[10px] text-slate-500" id="consoleStatus">Status: IDLE</span>
+    <!-- Clean Code Block Console -->
+    <div class="rounded-xl bg-slate-900 p-4 font-mono text-xs overflow-x-auto shadow-inner">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800 mb-3 text-slate-400">
+        <span class="text-xs text-emerald-400 font-bold" id="consoleEndpoint">GET /api/v1/wallets</span>
+        <span class="text-[11px] text-slate-400" id="consoleStatus">Status: 200 OK</span>
       </div>
-
-      <pre id="apiConsoleOutput" class="text-slate-300 leading-relaxed max-h-80 overflow-y-auto">// Click one of the API endpoints above to execute a real live request
-// Example: GET /api/v1/wallets
-// Headers sent: Authorization: Bearer &lt;JWT_TOKEN&gt;</pre>
+      <pre id="apiConsoleOutput" class="text-slate-200 leading-relaxed max-h-72 overflow-y-auto">// Click one of the buttons above to test live endpoints
+// Endpoint: http://localhost:3000/api/v1/wallets
+// Headers: Authorization: Bearer &lt;TOKEN&gt;</pre>
     </div>
   </div>
 
-  <!-- API Credentials & Curl Snippets -->
+  <!-- Credentials & Curl Grid -->
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
     
-    <!-- Credentials Box -->
-    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
-      <h3 class="text-sm font-bold text-white uppercase tracking-wider">Your API Credentials</h3>
+    <!-- API Credentials -->
+    <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
+      <h3 class="text-sm font-bold text-slate-900">API Credentials</h3>
       
       <div>
-        <label class="block text-xs font-semibold text-slate-400 mb-1">Production API Key</label>
-        <div class="flex items-center space-x-2">
-          <input type="text" readonly value="<%= @api_key %>" class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl font-mono text-xs text-brand-300 select-all" />
-        </div>
+        <label class="block text-xs font-bold text-slate-600 mb-1">Live Secret API Key</label>
+        <input type="text" readonly value="<%= @api_key %>" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl font-mono text-xs text-slate-800 select-all" />
       </div>
 
       <div>
-        <label class="block text-xs font-semibold text-slate-400 mb-1">Session JWT Token (24h validity)</label>
-        <div class="flex items-center space-x-2">
-          <input type="text" readonly value="<%= @jwt_token %>" class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl font-mono text-[10px] text-slate-400 truncate select-all" />
-        </div>
+        <label class="block text-xs font-bold text-slate-600 mb-1">Session JWT Token (24h)</label>
+        <input type="text" readonly value="<%= @jwt_token %>" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl font-mono text-[11px] text-slate-600 truncate select-all" />
       </div>
 
       <div>
-        <label class="block text-xs font-semibold text-slate-400 mb-1">Base URL</label>
-        <input type="text" readonly value="<%= @api_base_url %>" class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl font-mono text-xs text-slate-300" />
+        <label class="block text-xs font-bold text-slate-600 mb-1">Base Endpoint</label>
+        <input type="text" readonly value="<%= @api_base_url %>" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl font-mono text-xs text-slate-700" />
       </div>
     </div>
 
     <!-- Ready-to-run Curl Commands -->
-    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
-      <h3 class="text-sm font-bold text-white uppercase tracking-wider">Curl Examples for Terminal Testing</h3>
+    <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
+      <h3 class="text-sm font-bold text-slate-900">cURL Quick Reference</h3>
 
       <div class="space-y-3 font-mono text-xs">
         <div>
-          <div class="text-[10px] text-slate-400 font-sans font-semibold mb-1">1. Execute Idempotent Transfer:</div>
-          <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 text-slate-300 text-[11px] overflow-x-auto">
+          <span class="text-[11px] font-sans font-bold text-slate-600 block mb-1">Idempotent P2P Transfer:</span>
+          <div class="p-3 rounded-xl bg-slate-900 text-slate-200 text-[11px] overflow-x-auto">
 curl -X POST <%= @api_base_url %>/transfers \<br>
-&nbsp;&nbsp;-H "Authorization: Bearer <%= @jwt_token[0..20] %>..." \<br>
-&nbsp;&nbsp;-H "Idempotency-Key: <%= SecureRandom.hex(8) %>" \<br>
+&nbsp;&nbsp;-H "Authorization: Bearer <%= @jwt_token[0..18] %>..." \<br>
+&nbsp;&nbsp;-H "Idempotency-Key: <%= SecureRandom.hex(6) %>" \<br>
 &nbsp;&nbsp;-H "Content-Type: application/json" \<br>
-&nbsp;&nbsp;-d '{"recipient": "$alice", "amount": 25.00, "description": "Consulting Retainer"}'
-          </div>
-        </div>
-
-        <div>
-          <div class="text-[10px] text-slate-400 font-sans font-semibold mb-1">2. Inspect Wallet Double-Entry Ledger:</div>
-          <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 text-slate-300 text-[11px] overflow-x-auto">
-curl -X GET <%= @api_base_url %>/wallets/<%= current_user.primary_wallet&.id %>/ledger \<br>
-&nbsp;&nbsp;-H "Authorization: Bearer <%= @jwt_token[0..20] %>..."
+&nbsp;&nbsp;-d '{"recipient": "$alice", "amount": 25.00}'
           </div>
         </div>
       </div>
@@ -169,40 +88,38 @@ curl -X GET <%= @api_base_url %>/wallets/<%= current_user.primary_wallet&.id %>/
 
   </div>
 
-  <!-- Webhook Event Deliveries Audit Log -->
-  <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl">
+  <!-- Outgoing Webhooks -->
+  <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
     <div class="flex items-center justify-between mb-4">
       <div>
-        <h3 class="text-base font-bold text-white tracking-tight">Outgoing Webhook Delivery Dispatcher</h3>
-        <p class="text-xs text-slate-400">Real-time payment events dispatched to subscriber endpoints</p>
+        <h3 class="text-sm font-bold text-slate-900">Webhook Deliveries Log</h3>
+        <p class="text-xs text-slate-500">Live payment events dispatched to listener webhooks</p>
       </div>
-      <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-        Active Dispatcher
-      </span>
+      <span class="text-xs font-bold text-emerald-600">Dispatcher Active</span>
     </div>
 
     <% if @recent_deliveries.any? %>
-      <div class="space-y-2.5">
+      <div class="divide-y divide-slate-100">
         <% @recent_deliveries.each do |delivery| %>
-          <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between text-xs">
+          <div class="py-3 flex items-center justify-between text-xs">
             <div class="flex items-center space-x-3">
-              <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-brand-500/10 text-brand-300 border border-brand-500/20">
+              <span class="px-2 py-0.5 rounded font-mono font-bold bg-blue-50 text-[#0070BA]">
                 <%= delivery.event_type %>
               </span>
-              <span class="text-slate-300 font-mono text-[11px] truncate max-w-sm">
-                Payload: <%= delivery.payload.truncate(60) %>
+              <span class="text-slate-600 font-mono text-[11px] truncate max-w-sm">
+                <%= delivery.payload.truncate(60) %>
               </span>
             </div>
-            <div class="flex items-center space-x-3 font-mono text-[11px]">
-              <span class="text-emerald-400 font-bold">HTTP <%= delivery.response_code %> OK</span>
-              <span class="text-slate-500"><%= delivery.created_at.strftime("%H:%M:%S") %></span>
+            <div class="flex items-center space-x-3 text-slate-500 font-mono text-[11px]">
+              <span class="font-bold text-emerald-600">HTTP <%= delivery.response_code %> OK</span>
+              <span><%= delivery.created_at.strftime("%H:%M:%S") %></span>
             </div>
           </div>
         <% end %>
       </div>
     <% else %>
-      <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-400 text-center">
-        No webhook events delivered yet. Make a transfer to trigger automatic webhook dispatching!
+      <div class="text-center py-6 text-xs text-slate-400">
+        No webhook deliveries logged yet.
       </div>
     <% end %>
   </div>
@@ -217,7 +134,7 @@ curl -X GET <%= @api_base_url %>/wallets/<%= current_user.primary_wallet&.id %>/
 
     endpointLabel.textContent = `GET /api/v1/${endpoint}`;
     statusLabel.textContent = "Status: EXECUTING...";
-    consoleOutput.textContent = "Dispatching request to PayRail API Engine...";
+    consoleOutput.textContent = "Sending request to PayRail API Engine...";
 
     fetch('/developer/test_api', {
       method: 'POST',

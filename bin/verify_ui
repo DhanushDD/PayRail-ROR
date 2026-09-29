@@ -11,8 +11,9 @@ def test_ui
   uri = URI("#{BASE}/login")
   res = Net::HTTP.get_response(uri)
   raise "GET /login failed: #{res.code}" unless res.code == "200"
-  raise "Missing recruiter showcase" unless res.body.include?("ACCENTURE INTERVIEW SHOWCASE")
-  puts "[PASS] 1. GET /login: 200 OK (Recruiter 1-click access rendered)"
+  raise "Missing PayPal login card" unless res.body.include?("Log in to PayRail")
+  puts "[PASS] 1. GET /login: 200 OK (Clean PayPal/Paytm login card rendered)"
+
 
   initial_cookie = res["set-cookie"].split(";").first
   csrf_token = res.body[/name="authenticity_token" value="([^"]+)"/, 1]
@@ -38,9 +39,10 @@ def test_ui
   req = Net::HTTP::Get.new(uri, headers)
   res = Net::HTTP.start(uri.hostname, uri.port) { |h| h.request(req) }
   raise "Dashboard failed: #{res.code}" unless res.code == "200"
-  raise "Missing wallet info" unless res.body.include?("Primary Wallet")
+  raise "Missing wallet info" unless res.body.include?("PayRail Balance")
   csrf_token = res.body[/name="csrf-token" content="([^"]+)"/, 1]
-  puts "[PASS] 3. GET /dashboard: 200 OK (Wallet, Card visualizer, Inflow/Outflow rendered)"
+  puts "[PASS] 3. GET /dashboard: 200 OK (PayPal Balance tile, Quick Contacts, Activity rendered)"
+
 
   # 4. GET /transfers/new
   uri = URI("#{BASE}/transfers/new")
@@ -102,8 +104,9 @@ def test_ui
   req = Net::HTTP::Get.new(uri, headers)
   res = Net::HTTP.start(uri.hostname, uri.port) { |h| h.request(req) }
   raise "Developer failed: #{res.code}" unless res.code == "200"
-  raise "Missing interactive runner" unless res.body.include?("Interactive Live API Console")
-  puts "[PASS] 10. GET /developer: 200 OK (Recruiter Playground & Architecture Guide rendered)"
+  raise "Missing interactive runner" unless res.body.include?("Interactive API Console")
+  puts "[PASS] 10. GET /developer: 200 OK (Developer Portal & API Console rendered)"
+
 
   # 11. POST /developer/test_api
   uri = URI("#{BASE}/developer/test_api")

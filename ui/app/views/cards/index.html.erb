@@ -1,120 +1,138 @@
 <div class="space-y-6">
   
-  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2 border-b border-slate-800">
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2 border-b border-slate-200">
     <div>
-      <h1 class="text-2xl font-black text-white tracking-tight">Virtual Debit Cards</h1>
-      <p class="text-xs text-slate-400 mt-1">Instant virtual cards linked to your primary USD PayRail wallet with instant freeze controls</p>
+      <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Wallet</h1>
+      <p class="text-xs text-slate-500 mt-0.5">Manage your PayRail virtual cards and linked payment methods</p>
     </div>
 
     <div>
-      <button onclick="document.getElementById('newCardModal').classList.remove('hidden')" class="px-4 py-2 rounded-xl text-xs font-bold bg-brand-600 hover:bg-brand-500 text-white transition flex items-center space-x-1.5 shadow-lg shadow-brand-600/30">
+      <button onclick="document.getElementById('newCardModal').classList.remove('hidden')" class="px-5 py-2 rounded-full text-xs font-bold bg-[#0070BA] hover:bg-[#003087] text-white shadow-sm transition flex items-center space-x-1.5">
         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
         </svg>
-        <span>Issue New Card</span>
+        <span>Link / Issue Card</span>
       </button>
     </div>
   </div>
 
-  <!-- Cards Grid -->
+  <!-- Wallet Grid (PayPal Style) -->
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     <% @cards.each do |card| %>
-      <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl flex flex-col justify-between relative overflow-hidden">
+      <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col justify-between space-y-6">
         
-        <!-- Card UI Mockup -->
-        <div class="bg-gradient-to-tr <%= card.tier == 'Black Metal' ? 'from-zinc-950 via-slate-900 to-zinc-800' : 'from-slate-800 via-indigo-950 to-slate-900' %> border border-slate-700/80 rounded-2xl p-5 shadow-2xl relative mb-6">
+        <!-- Physical-looking Digital Card Graphic -->
+        <div class="bg-gradient-to-tr from-[#002266] via-[#003087] to-[#0070BA] rounded-2xl p-5 text-white shadow-md relative overflow-hidden">
           <div class="flex items-center justify-between mb-4">
-            <span class="text-xs font-extrabold tracking-widest text-white uppercase">PayRail</span>
-            <span class="text-[10px] px-2 py-0.5 rounded bg-amber-400/20 text-amber-300 font-mono font-bold"><%= card.tier %></span>
+            <span class="text-xs font-black tracking-widest uppercase">PayRail</span>
+            <span class="text-[10px] px-2 py-0.5 rounded-full bg-white/20 font-bold uppercase"><%= card.tier %></span>
           </div>
 
-          <div class="flex items-center space-x-2 my-4">
-            <div class="w-8 h-6 rounded bg-gradient-to-tr from-amber-400 to-amber-200 border border-amber-500/50 shadow-inner flex items-center justify-center">
-              <div class="w-6 h-4 border border-amber-600/40 rounded-sm"></div>
+          <div class="my-3">
+            <div class="w-8 h-6 rounded bg-amber-300/80 border border-amber-400/60 mb-2"></div>
+            <div class="text-base font-mono font-bold tracking-widest text-white">
+              <%= card.masked_number %>
             </div>
-            <svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0" />
-            </svg>
           </div>
 
-          <div class="text-base font-mono font-bold tracking-widest text-slate-100 mb-4">
-            <%= card.masked_number %>
-          </div>
-
-          <div class="flex items-end justify-between text-xs">
+          <div class="flex items-end justify-between text-xs pt-2 border-t border-white/20">
             <div>
-              <div class="text-[8px] text-slate-400 uppercase tracking-wider">Cardholder</div>
-              <div class="font-bold text-white text-[11px]"><%= card.cardholder_name %></div>
+              <div class="text-[9px] uppercase tracking-wider text-slate-200">Cardholder</div>
+              <div class="font-bold text-white text-xs"><%= card.cardholder_name %></div>
             </div>
             <div>
-              <div class="text-[8px] text-slate-400 uppercase tracking-wider">Expires</div>
-              <div class="font-mono font-bold text-slate-200 text-[11px]"><%= card.formatted_expiry %></div>
+              <div class="text-[9px] uppercase tracking-wider text-slate-200">Expires</div>
+              <div class="font-mono font-bold text-xs"><%= card.formatted_expiry %></div>
             </div>
             <div>
-              <div class="text-[8px] text-slate-400 uppercase tracking-wider">CVV</div>
-              <div class="font-mono font-bold text-slate-200 text-[11px]"><%= card.cvv %></div>
+              <div class="text-[9px] uppercase tracking-wider text-slate-200">CVV</div>
+              <div class="font-mono font-bold text-xs"><%= card.cvv %></div>
             </div>
           </div>
         </div>
 
-        <!-- Card Meta & Controls -->
-        <div class="space-y-3">
+        <!-- Card Meta Info & Controls -->
+        <div class="space-y-3 pt-2">
           <div class="flex items-center justify-between text-xs">
-            <span class="text-slate-400">Card Status:</span>
-            <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold <%= card.active? ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border border-rose-500/20' %>">
-              <span class="w-1.5 h-1.5 rounded-full <%= card.active? ? 'bg-emerald-400' : 'bg-rose-400' %> mr-1"></span>
+            <span class="text-slate-500 font-medium">Card Status:</span>
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold <%= card.active? ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700' %>">
+              <span class="w-1.5 h-1.5 rounded-full <%= card.active? ? 'bg-emerald-500' : 'bg-rose-500' %> mr-1.5"></span>
               <%= card.status.titleize %>
             </span>
           </div>
 
           <div class="flex items-center justify-between text-xs">
-            <span class="text-slate-400">Monthly Spending Limit:</span>
-            <span class="font-mono font-bold text-white"><%= card.formatted_monthly_limit %></span>
+            <span class="text-slate-500 font-medium">Monthly Spending Limit:</span>
+            <span class="font-bold text-slate-800"><%= card.formatted_monthly_limit %></span>
           </div>
 
           <div class="pt-2">
-            <%= button_to toggle_freeze_card_path(card), method: :patch, class: "w-full py-2 rounded-xl text-xs font-bold #{card.active? ? 'bg-slate-800 hover:bg-slate-700 text-slate-300' : 'bg-rose-600 hover:bg-rose-500 text-white'} transition" do %>
-              <%= card.active? ? "Freeze Card" : "Unfreeze Card" %>
+            <%= button_to toggle_freeze_card_path(card), method: :patch, class: "w-full py-2.5 rounded-full text-xs font-bold #{card.active? ? 'border border-slate-300 hover:bg-slate-50 text-slate-700' : 'bg-rose-600 hover:bg-rose-700 text-white'} transition" do %>
+              <%= card.active? ? "Lock Card (Freeze)" : "Unlock Card" %>
             <% end %>
           </div>
         </div>
 
       </div>
     <% end %>
+
+    <!-- Linked Bank Card Placeholder -->
+    <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
+      <div>
+        <div class="flex items-center space-x-3 mb-4">
+          <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+            </svg>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-slate-900">Chase Bank</h3>
+            <p class="text-xs text-slate-500">Checking •••• 4021</p>
+          </div>
+        </div>
+        <p class="text-xs text-slate-500 leading-relaxed">
+          Linked for instant zero-fee top-ups and automatic transfer withdrawals.
+        </p>
+      </div>
+
+      <div class="pt-4 border-t border-slate-100">
+        <span class="text-xs font-bold text-emerald-600">Primary Linked Bank</span>
+      </div>
+    </div>
   </div>
 
 </div>
 
-<!-- Issue New Card Modal -->
-<div id="newCardModal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
-  <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl relative">
-    <button onclick="document.getElementById('newCardModal').classList.add('hidden')" class="absolute top-4 right-4 text-slate-400 hover:text-white p-1">
+<!-- Issue Card Modal -->
+<div id="newCardModal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+  <div class="bg-white border border-slate-200 rounded-3xl max-w-md w-full p-8 shadow-2xl relative">
+    <button onclick="document.getElementById('newCardModal').classList.add('hidden')" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 p-1">
       <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
       </svg>
     </button>
 
-    <h3 class="text-lg font-bold text-white mb-1">Issue New Virtual Card</h3>
-    <p class="text-xs text-slate-400 mb-5">Generated instantly with zero issuance fee</p>
+    <h3 class="text-xl font-bold text-slate-900 mb-1">Issue New Virtual Card</h3>
+    <p class="text-xs text-slate-500 mb-5">Generated instantly and linked to your PayRail balance</p>
 
     <%= form_with url: cards_path, method: :post, local: true, class: "space-y-4" do |f| %>
       <div>
-        <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Cardholder Name</label>
-        <%= f.text_field :cardholder_name, value: current_user.name.upcase, required: true, class: "w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-xs font-semibold focus:outline-none focus:border-brand-500" %>
+        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Cardholder Name</label>
+        <%= f.text_field :cardholder_name, value: current_user.name.upcase, required: true, class: "w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl text-slate-900 text-xs font-semibold focus:outline-none focus:border-[#0070BA]" %>
       </div>
 
       <div>
-        <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Card Tier</label>
-        <%= f.select :tier, [["Black Metal Edition", "Black Metal"], ["Platinum Horizon", "Platinum"], ["Standard Virtual", "Virtual"]], {}, class: "w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-brand-500" %>
+        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Card Tier</label>
+        <%= f.select :tier, [["PayRail Signature Blue", "Signature"], ["Black Metal Edition", "Black Metal"], ["Platinum Horizon", "Platinum"]], {}, class: "w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-slate-900 text-xs focus:outline-none focus:border-[#0070BA]" %>
       </div>
 
       <div>
-        <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Monthly Spending Limit ($)</label>
-        <%= f.number_field :monthly_limit, value: 5000.00, step: 100, min: 100, required: true, class: "w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-xs font-mono font-bold focus:outline-none focus:border-brand-500" %>
+        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Monthly Limit ($)</label>
+        <%= f.number_field :monthly_limit, value: 5000.00, step: 100, min: 100, required: true, class: "w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl text-slate-900 text-xs font-mono font-bold focus:outline-none focus:border-[#0070BA]" %>
       </div>
 
       <div class="pt-2">
-        <%= f.submit "Issue Virtual Card Instantly", class: "w-full py-3 bg-brand-600 hover:bg-brand-500 text-white font-bold rounded-xl text-xs shadow-lg shadow-brand-600/30 transition cursor-pointer" %>
+        <%= f.submit "Issue Card Now", class: "w-full py-3.5 bg-[#0070BA] hover:bg-[#003087] text-white font-bold rounded-full text-xs shadow-sm transition cursor-pointer" %>
       </div>
     <% end %>
   </div>
