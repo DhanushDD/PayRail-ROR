@@ -1,5 +1,7 @@
+#!/usr/bin/env ruby
 require "net/http"
 require "json"
+
 require "uri"
 
 BASE = "http://localhost:3000/api/v1"
