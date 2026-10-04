@@ -1,0 +1,20 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# PayRail Interview Handbook Verification CLI
+# Boots Rails environment and executes all codes, questions (Q1-Q169),
+# 20 cheat sheet pairs, and follow-up architecture patterns from the notes.
+
+ENV["RAILS_ENV"] ||= "development"
+
+# Require API environment
+require_relative "../api/config/environment"
+require_relative "../api/lib/interview_handbook/runner"
+
+result = InterviewHandbook::Runner.run(verbose: true)
+
+if result[:success]
+  exit 0
+else
+  exit 1
+end

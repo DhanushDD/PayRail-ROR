@@ -48,6 +48,6 @@ class TransfersControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to transfer_path(created_transfer.reference_id)
     follow_redirect!
     assert_response :success
-    assert_select "div", text: /Payment Settled Successfully/
+    assert_select "h2", text: /Payment Completed/
   end
 end

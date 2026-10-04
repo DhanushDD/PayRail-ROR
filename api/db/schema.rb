@@ -10,7 +10,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_29_141744) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_04_090600) do
+  create_table "email_deliveries", force: :cascade do |t|
+    t.integer "user_id"
+    t.string "recipient_email", null: false
+    t.string "subject", null: false
+    t.string "idempotency_key", null: false
+    t.string "provider_message_id"
+    t.string "status", default: "pending", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["idempotency_key"], name: "index_email_deliveries_on_idempotency_key", unique: true
+    t.index ["status", "created_at"], name: "index_email_deliveries_on_status_and_created_at"
+    t.index ["user_id"], name: "index_email_deliveries_on_user_id"
+  end
+
   create_table "idempotency_records", force: :cascade do |t|
     t.string "key", null: false
     t.string "request_path", null: false
@@ -36,6 +50,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_29_141744) do
     t.index ["wallet_id"], name: "index_ledger_entries_on_wallet_id"
   end
 
+  create_table "outbox_events", force: :cascade do |t|
+    t.string "event_type", null: false
+    t.string "aggregate_type", null: false
+    t.string "aggregate_id", null: false
+    t.json "payload", null: false
+    t.string "status", default: "pending", null: false
+    t.datetime "published_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["status", "created_at"], name: "index_outbox_events_on_status_and_created_at"
+  end
+
   create_table "payment_links", force: :cascade do |t|
     t.integer "user_id", null: false
     t.integer "wallet_id", null: false
@@ -51,6 +77,25 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_29_141744) do
     t.index ["link_token"], name: "index_payment_links_on_link_token", unique: true
     t.index ["user_id"], name: "index_payment_links_on_user_id"
     t.index ["wallet_id"], name: "index_payment_links_on_wallet_id"
+  end
+
+  create_table "sms_campaigns", force: :cascade do |t|
+    t.string "title", null: false
+    t.string "status", default: "draft", null: false
+    t.text "message", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "sms_recipients", force: :cascade do |t|
+    t.integer "sms_campaign_id", null: false
+    t.string "phone_number", null: false
+    t.string "status", default: "pending", null: false
+    t.string "provider_message_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["sms_campaign_id", "status"], name: "index_sms_recipients_on_sms_campaign_id_and_status"
+    t.index ["sms_campaign_id"], name: "index_sms_recipients_on_sms_campaign_id"
   end
 
   create_table "transfers", force: :cascade do |t|
@@ -121,6 +166,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_29_141744) do
     t.bigint "daily_limit_cents", default: 1000000
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "lock_version", default: 0, null: false
     t.index ["user_id"], name: "index_wallets_on_user_id"
     t.index ["wallet_number"], name: "index_wallets_on_wallet_number", unique: true
   end
@@ -146,10 +192,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_29_141744) do
     t.index ["user_id"], name: "index_webhook_endpoints_on_user_id"
   end
 
+  add_foreign_key "email_deliveries", "users"
   add_foreign_key "ledger_entries", "transfers"
   add_foreign_key "ledger_entries", "wallets"
   add_foreign_key "payment_links", "users"
   add_foreign_key "payment_links", "wallets"
+  add_foreign_key "sms_recipients", "sms_campaigns"
   add_foreign_key "transfers", "wallets", column: "recipient_wallet_id"
   add_foreign_key "transfers", "wallets", column: "sender_wallet_id"
   add_foreign_key "virtual_cards", "users"

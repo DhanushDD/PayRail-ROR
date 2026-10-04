@@ -21,6 +21,9 @@ bin/rails tailwindcss:build
 bin/rails test test/controllers/transfers_controller_test.rb
 cd ..
 
+echo "3. Verifying Ruby & Rails Interview Handbook (Q1-Q169)..."
+bin/verify_handbook
+
 echo "=========================================================="
 echo " ✅ Setup Complete! Run './start.sh' to launch PayRail!   "
 echo "=========================================================="

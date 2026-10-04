@@ -1,6 +1,10 @@
 # db/seeds.rb for PayRail Payment Engine
 
 puts "🧹 Resetting existing demo data..."
+OutboxEvent.delete_all
+EmailDelivery.delete_all
+SmsRecipient.delete_all
+SmsCampaign.delete_all
 LedgerEntry.delete_all
 Transfer.delete_all
 PaymentLink.delete_all
