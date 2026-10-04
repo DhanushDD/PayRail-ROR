@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# Quick Console Launcher for PayRail
+# Usage:
+#   bin/console        # opens api console (default)
+#   bin/console api    # opens api console
+#   bin/console ui     # opens ui console
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+TARGET="${1:-api}"
+
+if [ "$TARGET" = "ui" ]; then
+  echo "🚀 Launching PayRail Web UI Console (ui/)..."
+  cd "$SCRIPT_DIR/ui" && exec bin/rails console
+else
+  echo "🚀 Launching PayRail Core Payment Engine Console (api/)..."
+  cd "$SCRIPT_DIR/api" && exec bin/rails console
+fi

@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# PayRail Root Rails CLI Dispatcher
+# Allows running `bin/rails console`, `bin/rails runner`, `bin/rails test`, etc. from the root folder.
+# By default delegates to `api/`. Pass `ui` as first argument to target `ui/`:
+#   bin/rails console       # launches api console
+#   bin/rails ui console    # launches ui console
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+if [ "$1" = "ui" ]; then
+  shift
+  cd "$SCRIPT_DIR/ui" && exec bin/rails "$@"
+else
+  cd "$SCRIPT_DIR/api" && exec bin/rails "$@"
+fi
