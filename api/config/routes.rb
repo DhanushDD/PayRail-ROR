@@ -7,17 +7,21 @@ Rails.application.routes.draw do
       { "Content-Type" => "application/json" },
       [
         {
-          name: "PayRail Authentication API",
+          name: "PayRail Core Payment & Authentication API",
           version: "1.0.0",
           engine: "Ruby on Rails 8.1 (RESTful API, Sidekiq, RSpec)",
           status: "healthy",
           endpoints: {
             auth: [
               "POST /api/v1/auth/sign_up",
-              "POST /api/v1/auth/register",
               "POST /api/v1/auth/login",
               "DELETE /api/v1/auth/logout",
               "GET /api/v1/auth/me"
+            ],
+            payments: [
+              "GET /api/v1/payments",
+              "POST /api/v1/payments",
+              "POST /api/v1/payments/deposit"
             ]
           }
         }.to_json
@@ -32,6 +36,12 @@ Rails.application.routes.draw do
       post "auth/login", to: "auth#login"
       delete "auth/logout", to: "auth#logout"
       get "auth/me", to: "auth#me"
+
+      resources :payments, only: [:index, :create] do
+        collection do
+          post :deposit
+        end
+      end
     end
   end
 end

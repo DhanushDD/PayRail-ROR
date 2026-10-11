@@ -13,6 +13,11 @@ Rails.application.routes.draw do
   get "sign_up", to: "registrations#new"
   post "sign_up", to: "registrations#create"
 
-  # Authenticated User Profile Dashboard
+  # Payment Dashboard & Actions
   get "dashboard", to: "dashboard#index"
+  resources :payments, only: [:create] do
+    collection do
+      post :deposit
+    end
+  end
 end

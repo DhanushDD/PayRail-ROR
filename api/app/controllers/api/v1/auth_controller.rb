@@ -63,6 +63,7 @@ module Api
       end
 
       def serialize_user(user)
+        wallet = user.wallet
         {
           id: user.id,
           name: user.name,
@@ -72,7 +73,14 @@ module Api
           avatar_color: user.avatar_color,
           api_key: user.api_key,
           sign_in_count: user.sign_in_count,
-          last_sign_in_at: user.last_sign_in_at
+          last_sign_in_at: user.last_sign_in_at,
+          wallet: wallet ? {
+            id: wallet.id,
+            wallet_number: wallet.wallet_number,
+            currency: wallet.currency,
+            balance_cents: wallet.balance_cents,
+            formatted_balance: wallet.formatted_balance
+          } : nil
         }
       end
     end
