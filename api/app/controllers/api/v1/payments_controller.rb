@@ -44,7 +44,7 @@ module Api
           wallet_balance: current_user.reload.formatted_balance
         }, status: :created
       rescue ArgumentError, StandardError => e
-        render json: { error: e.message }, status: :unprocessable_entity
+        render json: { error: e.message }, status: :unprocessable_content
       end
 
       # POST /api/v1/payments/authorize (Step 1 of Payment Gateway Flow: Places Hold)
@@ -75,7 +75,7 @@ module Api
       rescue PaymentGatewayService::GatewayDeclinedError => e
         render json: { error: "Gateway Declined", message: e.message }, status: :payment_required
       rescue ArgumentError, StandardError => e
-        render json: { error: e.message }, status: :unprocessable_entity
+        render json: { error: e.message }, status: :unprocessable_content
       end
 
       # POST /api/v1/payments/:id/capture (Step 2A: Settles Authorized Hold & Deducts Gateway Fee)
@@ -91,7 +91,7 @@ module Api
           wallet_balance: current_user.reload.formatted_balance
         }, status: :ok
       rescue StandardError => e
-        render json: { error: e.message }, status: :unprocessable_entity
+        render json: { error: e.message }, status: :unprocessable_content
       end
 
       # POST /api/v1/payments/:id/void (Step 2B: Cancels Authorization Hold)
@@ -107,7 +107,7 @@ module Api
           wallet_balance: current_user.reload.formatted_balance
         }, status: :ok
       rescue StandardError => e
-        render json: { error: e.message }, status: :unprocessable_entity
+        render json: { error: e.message }, status: :unprocessable_content
       end
 
       # POST /api/v1/payments/deposit
@@ -127,7 +127,7 @@ module Api
           wallet_balance: current_user.reload.formatted_balance
         }, status: :created
       rescue ArgumentError, StandardError => e
-        render json: { error: e.message }, status: :unprocessable_entity
+        render json: { error: e.message }, status: :unprocessable_content
       end
 
       # POST /api/v1/payments/:id/refund (Step 3: Refunds Captured / Completed Payment)
@@ -143,7 +143,7 @@ module Api
           wallet_balance: current_user.reload.formatted_balance
         }, status: :ok
       rescue StandardError => e
-        render json: { error: e.message }, status: :unprocessable_entity
+        render json: { error: e.message }, status: :unprocessable_content
       end
 
       private

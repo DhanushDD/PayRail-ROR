@@ -29,7 +29,7 @@ RSpec.describe "API V1 Authentication (Sign Up / Login / Logout)", type: :reques
 
     it "returns 422 unprocessable_entity on invalid params" do
       post "/api/v1/auth/sign_up", params: { user: { name: "", email: "bad" } }
-      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response).to have_http_status(:unprocessable_content)
     end
   end
 

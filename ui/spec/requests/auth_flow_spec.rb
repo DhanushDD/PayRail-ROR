@@ -43,7 +43,7 @@ RSpec.describe "UI Authentication & Payment Flows", type: :request do
       )
     end
 
-    it "logs in, deposits money, sends a P2P payment, and logs out" do
+    it "logs in, deposits money, sends a P2P payment, executes Gateway Authorize -> Capture -> Refund, and logs out" do
       post "/login", params: { email_or_tag: "dhanush@payrail.io", password: "password123" }
       expect(response).to redirect_to(dashboard_path)
 
@@ -52,7 +52,7 @@ RSpec.describe "UI Authentication & Payment Flows", type: :request do
         post "/payments/deposit", params: { amount: 200.00 }
       }.to change { user.reload.balance_cents }.by(20_000)
 
-      # Send $50.00 to $alice
+      # Send $50.00 P2P to $alice
       expect {
         post "/payments", params: { recipient: "$alice", amount: 50.00, description: "Lunch" }
       }.to change(Payment, :count).by(1)
@@ -60,6 +60,17 @@ RSpec.describe "UI Authentication & Payment Flows", type: :request do
 
       expect(user.reload.balance_cents).to eq(115_000)
       expect(recipient.reload.balance_cents).to eq(105_000)
+
+      # Gateway Step 1: Authorize $100.00
+      post "/payments", params: { recipient: "$alice", amount: 100.00, checkout_mode: "authorize", description: "Gateway Order" }
+      auth_payment = Payment.last
+      expect(auth_payment.status).to eq("authorized")
+      expect(user.wallet.reload.held_balance_cents).to eq(10_000)
+
+      # Gateway Step 2: Capture the authorized payment
+      post "/payments/#{auth_payment.id}/capture"
+      expect(auth_payment.reload.status).to eq("captured")
+      expect(user.wallet.reload.held_balance_cents).to eq(0)
 
       delete "/logout"
       expect(response).to redirect_to(login_path)

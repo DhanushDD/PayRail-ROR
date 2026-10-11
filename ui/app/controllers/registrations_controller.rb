@@ -15,7 +15,7 @@ class RegistrationsController < ApplicationController
       flash[:notice] = "Welcome to PayRail! Your account has been created."
       redirect_to dashboard_path
     else
-      render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_content
     end
   end
 

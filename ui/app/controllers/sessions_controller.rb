@@ -27,7 +27,7 @@ class SessionsController < ApplicationController
     else
       flash.now[:alert] = "Invalid email, PayRail tag, or password."
       @demo_users = User.where(email: ["demo@payrail.io", "alice@payrail.io", "bob@payrail.io"]).limit(3)
-      render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_content
     end
   end
 
