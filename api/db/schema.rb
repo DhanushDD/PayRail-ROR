@@ -32,13 +32,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_11_000001) do
     t.integer "recipient_id", null: false
     t.bigint "amount_cents", null: false
     t.bigint "fee_cents", default: 0, null: false
+    t.bigint "net_amount_cents", default: 0, null: false
     t.string "currency", default: "USD", null: false
     t.string "payment_type", default: "transfer", null: false
     t.string "status", default: "completed", null: false
     t.string "description"
     t.bigint "parent_payment_id"
+    t.string "gateway_provider", default: "payrail_gateway"
+    t.string "gateway_transaction_id"
+    t.string "authorization_code"
+    t.string "payment_method_token"
+    t.string "failure_reason"
+    t.datetime "authorized_at"
+    t.datetime "captured_at"
+    t.datetime "voided_at"
+    t.datetime "refunded_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["gateway_transaction_id"], name: "index_payments_on_gateway_transaction_id", unique: true
     t.index ["idempotency_key"], name: "index_payments_on_idempotency_key", unique: true
     t.index ["recipient_id", "created_at"], name: "index_payments_on_recipient_id_and_created_at"
     t.index ["recipient_id"], name: "index_payments_on_recipient_id"
@@ -73,12 +84,27 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_11_000001) do
     t.string "wallet_number", null: false
     t.string "currency", default: "USD", null: false
     t.bigint "balance_cents", default: 0, null: false
+    t.bigint "held_balance_cents", default: 0, null: false
     t.string "status", default: "active", null: false
     t.integer "lock_version", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_wallets_on_user_id"
     t.index ["wallet_number"], name: "index_wallets_on_wallet_number", unique: true
+  end
+
+  create_table "webhook_events", force: :cascade do |t|
+    t.string "event_id", null: false
+    t.string "event_type", null: false
+    t.string "gateway_transaction_id"
+    t.json "payload", null: false
+    t.string "status", default: "pending", null: false
+    t.string "error_message"
+    t.datetime "processed_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["event_id"], name: "index_webhook_events_on_event_id", unique: true
+    t.index ["status", "created_at"], name: "index_webhook_events_on_status_and_created_at"
   end
 
   add_foreign_key "ledger_entries", "payments"

@@ -13,13 +13,15 @@ Rails.application.routes.draw do
   get "sign_up", to: "registrations#new"
   post "sign_up", to: "registrations#create"
 
-  # Payment Dashboard & Actions
+  # Payment Gateway Dashboard & Actions
   get "dashboard", to: "dashboard#index"
   resources :payments, only: [:create] do
     collection do
       post :deposit
     end
     member do
+      post :capture
+      post :void
       post :refund
     end
   end

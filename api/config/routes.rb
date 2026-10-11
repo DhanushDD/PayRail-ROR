@@ -7,9 +7,9 @@ Rails.application.routes.draw do
       { "Content-Type" => "application/json" },
       [
         {
-          name: "PayRail Core Payment & Authentication API",
+          name: "PayRail Core Payment Gateway & Authentication API",
           version: "1.0.0",
-          engine: "Ruby on Rails 8.1 (Payments Fundamentals, Sidekiq, RSpec)",
+          engine: "Ruby on Rails 8.1 (Payment Gateway Lifecycle, Sidekiq, RSpec)",
           status: "healthy",
           endpoints: {
             auth: [
@@ -18,11 +18,17 @@ Rails.application.routes.draw do
               "DELETE /api/v1/auth/logout",
               "GET /api/v1/auth/me"
             ],
-            payments: [
+            payments_and_gateway: [
               "GET /api/v1/payments",
               "POST /api/v1/payments",
-              "POST /api/v1/payments/deposit",
-              "POST /api/v1/payments/:id/refund"
+              "POST /api/v1/payments/authorize",
+              "POST /api/v1/payments/:id/capture",
+              "POST /api/v1/payments/:id/void",
+              "POST /api/v1/payments/:id/refund",
+              "POST /api/v1/payments/deposit"
+            ],
+            webhooks: [
+              "POST /api/v1/webhooks/gateway"
             ]
           }
         }.to_json
@@ -40,12 +46,17 @@ Rails.application.routes.draw do
 
       resources :payments, only: [:index, :create] do
         collection do
+          post :authorize
           post :deposit
         end
         member do
+          post :capture
+          post :void
           post :refund
         end
       end
+
+      post "webhooks/gateway", to: "webhooks#gateway"
     end
   end
 end

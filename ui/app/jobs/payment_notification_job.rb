@@ -11,3 +11,4 @@ class PaymentNotificationJob < ApplicationJob
     Rails.logger.info "[PaymentNotificationJob] Dispatched receipt for #{payment.reference_id} (#{payment.formatted_amount})"
   end
 end
+

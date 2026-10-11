@@ -5,11 +5,16 @@ class Wallet < ApplicationRecord
   validates :wallet_number, presence: true, uniqueness: true
   validates :currency, presence: true
   validates :balance_cents, numericality: { greater_than_or_equal_to: 0 }
+  validates :held_balance_cents, numericality: { greater_than_or_equal_to: 0 }
 
   before_validation :assign_wallet_number, on: :create
 
   def formatted_balance
     format("$%.2f", balance_cents / 100.0)
+  end
+
+  def formatted_held_balance
+    format("$%.2f", held_balance_cents / 100.0)
   end
 
   # Deposit funds into wallet with pessimistic locking and immutable ledger entry
@@ -32,11 +37,13 @@ class Wallet < ApplicationRecord
         recipient: user,
         amount_cents: amount_cents,
         fee_cents: 0,
+        net_amount_cents: amount_cents,
         currency: currency,
         payment_type: "deposit",
         status: "completed",
         description: description,
-        idempotency_key: idempotency_key
+        idempotency_key: idempotency_key,
+        captured_at: Time.current
       )
 
       ledger_entries.create!(

@@ -18,10 +18,10 @@
   <!-- Main 2-Column Payment App Grid -->
   <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
-    <!-- Left Column (7 cols): Wallet Balance + Recent Payment Activity + Double-Entry Ledger -->
+    <!-- Left Column (7 cols): Wallet Balance + Payment Gateway Lifecycle Activity + Double-Entry Ledger -->
     <div class="lg:col-span-7 space-y-6">
 
-      <!-- 1. PayRail Balance Card -->
+      <!-- 1. PayRail Balance Card (Available + Auth Hold) -->
       <div class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-sm">
         <div class="flex items-center justify-between mb-2">
           <div class="flex items-center space-x-2">
@@ -31,11 +31,19 @@
           <span class="text-xs font-mono font-semibold text-slate-400"><%= @wallet.currency %></span>
         </div>
 
-        <div class="flex items-baseline space-x-2 my-3">
-          <span class="text-4xl sm:text-5xl font-extrabold text-slate-900 tracking-tight">
-            <%= @wallet.formatted_balance %>
-          </span>
-          <span class="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">Available</span>
+        <div class="flex flex-wrap items-baseline justify-between gap-4 my-3">
+          <div class="flex items-baseline space-x-2">
+            <span class="text-4xl sm:text-5xl font-extrabold text-slate-900 tracking-tight">
+              <%= @wallet.formatted_balance %>
+            </span>
+            <span class="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">Available</span>
+          </div>
+
+          <% if @wallet.held_balance_cents > 0 %>
+            <div class="px-3 py-1.5 rounded-xl bg-amber-50 border border-amber-200 text-xs font-mono text-amber-800">
+              Auth Hold: <strong><%= @wallet.formatted_held_balance %></strong>
+            </div>
+          <% end %>
         </div>
 
         <!-- Quick Add Money Inline Form -->
@@ -51,12 +59,12 @@
         </div>
       </div>
 
-      <!-- 2. Recent Payments & Transfers Activity -->
+      <!-- 2. Payment Gateway Lifecycle Activity (Authorize -> Capture / Void -> Refund) -->
       <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
         <div class="p-6 border-b border-slate-100 flex items-center justify-between">
           <div>
-            <h3 class="text-base font-bold text-slate-900">Recent Payment Activity</h3>
-            <p class="text-xs text-slate-500 mt-0.5">P2P transfers, deposits, and instant refunds</p>
+            <h3 class="text-base font-bold text-slate-900">Payment Gateway &amp; Transfer Activity</h3>
+            <p class="text-xs text-slate-500 mt-0.5">Full lifecycle: <code class="font-mono text-[11px]">authorized &rarr; captured / voided &rarr; refunded</code></p>
           </div>
           <span class="text-xs font-mono text-slate-400"><%= @payments.count %> transactions</span>
         </div>
@@ -65,10 +73,10 @@
           <div class="divide-y divide-slate-100">
             <% @payments.each do |payment| %>
               <% is_credit = payment.credit_for?(@user) %>
-              <div class="p-4 sm:px-6 hover:bg-slate-50/80 transition flex items-center justify-between">
-                <div class="flex items-center space-x-3.5">
-                  <div class="w-10 h-10 rounded-full <%= is_credit ? 'bg-emerald-50 text-emerald-600' : 'bg-blue-50 text-[#0070BA]' %> flex items-center justify-center font-bold text-sm flex-shrink-0">
-                    <%= is_credit ? "+" : "→" %>
+              <div class="p-4 sm:px-6 hover:bg-slate-50/80 transition flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div class="flex items-start space-x-3.5">
+                  <div class="w-10 h-10 rounded-full <%= payment.status == 'authorized' ? 'bg-amber-50 text-amber-600' : (is_credit ? 'bg-emerald-50 text-emerald-600' : 'bg-blue-50 text-[#0070BA]') %> flex items-center justify-center font-bold text-sm flex-shrink-0 mt-0.5">
+                    <%= payment.status == "authorized" ? "⏱" : (is_credit ? "+" : "→") %>
                   </div>
                   <div>
                     <div class="text-sm font-bold text-slate-900">
@@ -84,35 +92,57 @@
                     </div>
                     <div class="text-xs text-slate-500 flex flex-wrap items-center gap-x-2 mt-0.5">
                       <span class="font-mono text-[11px] text-slate-400"><%= payment.reference_id %></span>
+                      <% if payment.authorization_code.present? %>
+                        <span>&bull;</span>
+                        <span class="font-mono text-[11px] text-[#0070BA]"><%= payment.authorization_code %></span>
+                      <% end %>
+                      <% if payment.fee_cents > 0 %>
+                        <span>&bull;</span>
+                        <span class="text-[11px] text-slate-400">Fee: <%= payment.formatted_fee %> (Net: <%= payment.formatted_net_amount %>)</span>
+                      <% end %>
                       <span>&bull;</span>
                       <span><%= payment.description %></span>
-                      <span>&bull;</span>
-                      <span><%= payment.created_at.strftime("%b %d, %H:%M") %></span>
                     </div>
                   </div>
                 </div>
 
-                <div class="text-right flex items-center space-x-3">
-                  <div>
+                <div class="flex items-center justify-between sm:justify-end space-x-3">
+                  <div class="text-right">
                     <div class="text-sm font-extrabold font-mono <%= is_credit ? 'text-emerald-600' : 'text-slate-900' %>">
                       <%= is_credit ? "+" : "-" %><%= payment.formatted_amount %>
                     </div>
-                    <div class="text-[11px] <%= payment.status == 'refunded' ? 'text-amber-600' : 'text-slate-400' %> uppercase font-semibold">
+                    <div class="text-[10px] px-2 py-0.5 rounded-full inline-block uppercase font-bold <%= payment.status == 'authorized' ? 'bg-amber-100 text-amber-800' : (payment.status == 'voided' ? 'bg-slate-200 text-slate-600' : (payment.status == 'refunded' ? 'bg-rose-100 text-rose-700' : 'bg-emerald-50 text-emerald-700')) %>">
                       <%= payment.status %>
                     </div>
                   </div>
-                  <% if payment.refundable_by?(@user) %>
-                    <%= button_to refund_payment_path(payment), method: :post, class: "px-2.5 py-1 rounded-full bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 text-[11px] font-bold transition cursor-pointer" do %>
-                      Refund
+
+                  <!-- Gateway State Machine Action Buttons -->
+                  <div class="flex items-center space-x-1.5">
+                    <% if payment.capturable_by?(@user) %>
+                      <%= button_to capture_payment_path(payment), method: :post, class: "px-2.5 py-1 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold transition cursor-pointer" do %>
+                        Capture
+                      <% end %>
                     <% end %>
-                  <% end %>
+
+                    <% if payment.voidable_by?(@user) %>
+                      <%= button_to void_payment_path(payment), method: :post, class: "px-2.5 py-1 rounded-full bg-slate-200 hover:bg-slate-300 text-slate-700 text-[11px] font-bold transition cursor-pointer" do %>
+                        Void
+                      <% end %>
+                    <% end %>
+
+                    <% if payment.refundable_by?(@user) %>
+                      <%= button_to refund_payment_path(payment), method: :post, class: "px-2.5 py-1 rounded-full bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 text-[11px] font-bold transition cursor-pointer" do %>
+                        Refund
+                      <% end %>
+                    <% end %>
+                  </div>
                 </div>
               </div>
             <% end %>
           </div>
         <% else %>
           <div class="p-10 text-center text-xs text-slate-400">
-            No payments yet. Use the Send Money box to make your first transfer!
+            No payments yet. Use the Payment Gateway Checkout box to authorize or transfer funds!
           </div>
         <% end %>
       </div>
@@ -150,17 +180,17 @@
 
     </div>
 
-    <!-- Right Column (5 cols): Send Money Form + Quick Peers + API / Sidekiq Status -->
+    <!-- Right Column (5 cols): Payment Gateway Checkout + API / Sidekiq Architecture -->
     <div class="lg:col-span-5 space-y-6">
 
-      <!-- 1. Send Money Card -->
+      <!-- 1. Payment Gateway Terminal / Send Money Card -->
       <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm">
-        <h3 class="text-base font-bold text-slate-900">Send Money</h3>
-        <p class="text-xs text-slate-500 mt-0.5 mb-4">Instant P2P transfer by $tag or email (with Idempotency &amp; Sidekiq receipt job)</p>
+        <h3 class="text-base font-bold text-slate-900">Payment Gateway Checkout</h3>
+        <p class="text-xs text-slate-500 mt-0.5 mb-4">Choose <strong>2-Step Gateway Auth &amp; Capture</strong> or <strong>Instant P2P Settlement</strong></p>
 
         <% if @peers.any? %>
           <div class="mb-4">
-            <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Quick Select Recipient</div>
+            <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Quick Select Merchant / Recipient</div>
             <div class="flex flex-wrap gap-2">
               <% @peers.each do |peer| %>
                 <button type="button" onclick="document.getElementById('recipient_input').value='<%= peer.payrail_tag %>'" class="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-full bg-slate-100 hover:bg-blue-50 text-xs font-semibold text-slate-700 hover:text-[#0070BA] transition cursor-pointer">
@@ -175,7 +205,7 @@
         <%= form_with url: payments_path, method: :post, local: true, class: "space-y-3.5" do |f| %>
           <%= f.hidden_field :idempotency_key, value: "idem_#{SecureRandom.hex(8)}" %>
           <div>
-            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Recipient ($tag or Email)</label>
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Merchant / Recipient ($tag or Email)</label>
             <%= f.text_field :recipient, id: "recipient_input", placeholder: "e.g. $alice or alice@payrail.io", required: true, class: "w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs font-mono placeholder-slate-400 focus:outline-none focus:border-[#0070BA] focus:bg-white" %>
           </div>
 
@@ -183,33 +213,42 @@
             <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Amount (USD)</label>
             <div class="relative">
               <span class="absolute left-3.5 top-2.5 text-slate-400 font-bold text-sm">$</span>
-              <%= f.number_field :amount, step: 0.01, min: 1.00, placeholder: "50.00", required: true, class: "w-full pl-8 pr-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-base font-bold font-mono placeholder-slate-400 focus:outline-none focus:border-[#0070BA] focus:bg-white" %>
+              <%= f.number_field :amount, step: 0.01, min: 1.00, placeholder: "100.00", required: true, class: "w-full pl-8 pr-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-base font-bold font-mono placeholder-slate-400 focus:outline-none focus:border-[#0070BA] focus:bg-white" %>
             </div>
           </div>
 
           <div>
-            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Note</label>
-            <%= f.text_field :description, placeholder: "Dinner, coffee, rent...", class: "w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-800 text-xs placeholder-slate-400 focus:outline-none focus:border-[#0070BA] focus:bg-white" %>
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Gateway Workflow Mode</label>
+            <%= f.select :checkout_mode, [
+              ["Instant P2P Settlement (0% Fee)", "instant"],
+              ["2-Step Gateway Authorization Hold (2.9% + $0.30 Fee on Capture)", "authorize"]
+            ], {}, class: "w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-800 text-xs font-semibold focus:outline-none focus:border-[#0070BA] focus:bg-white" %>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Description / Order Ref</label>
+            <%= f.text_field :description, placeholder: "Order #1024, SaaS Subscription...", class: "w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-800 text-xs placeholder-slate-400 focus:outline-none focus:border-[#0070BA] focus:bg-white" %>
           </div>
 
           <div class="pt-1">
-            <%= f.submit "Send Payment Now", class: "w-full py-3 bg-[#0070BA] hover:bg-[#003087] text-white font-bold rounded-full text-xs shadow-sm transition cursor-pointer" %>
+            <%= f.submit "Execute Payment Transaction", class: "w-full py-3 bg-[#0070BA] hover:bg-[#003087] text-white font-bold rounded-full text-xs shadow-sm transition cursor-pointer" %>
           </div>
         <% end %>
       </div>
 
-      <!-- 2. API Key & Sidekiq Background Jobs Summary -->
+      <!-- 2. API Key & Payment Gateway Architecture Summary -->
       <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-3">
-        <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider">Payments Fundamentals &amp; Sidekiq</h3>
+        <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider">Payment Gateway &amp; Sidekiq Architecture</h3>
         <div>
           <div class="text-[11px] font-semibold text-slate-500 mb-1">API Key (`X-API-Key`)</div>
           <code class="block w-full p-2.5 rounded-xl bg-slate-900 text-emerald-400 font-mono text-[11px] overflow-x-auto"><%= @user.api_key %></code>
         </div>
-        <div class="text-xs text-slate-600 space-y-1 pt-1">
-          <div>&bull; <strong>Double-Entry Ledger</strong>: Every transfer records paired <code class="font-mono text-[11px]">debit</code> &amp; <code class="font-mono text-[11px]">credit</code> entries.</div>
-          <div>&bull; <strong>Idempotency Keys</strong>: Prevents duplicate charges on retries.</div>
-          <div>&bull; <strong>Pessimistic Locking</strong>: Deadlock-free ordered row locking.</div>
-          <div>&bull; <strong>Sidekiq Jobs</strong>: <code class="font-mono text-[11px]">WelcomeEmailJob</code>, <code class="font-mono text-[11px]">LoginNotificationJob</code>, <code class="font-mono text-[11px]">PaymentNotificationJob</code>, <code class="font-mono text-[11px]">SessionCleanupJob</code>.</div>
+        <div class="text-xs text-slate-600 space-y-1.5 pt-1">
+          <div>&bull; <strong>1. Authorize (`authorize!`)</strong>: Places hold (`held_balance_cents`) &amp; issues `AUTH-XXXXXX` code.</div>
+          <div>&bull; <strong>2. Capture (`capture!`)</strong>: Settles hold, deducts `2.9% + $0.30` gateway fee, credits net amount &amp; writes double-entry ledger.</div>
+          <div>&bull; <strong>3. Void (`void!`)</strong>: Releases authorization hold before capture.</div>
+          <div>&bull; <strong>4. Refund (`refund!`)</strong>: Reverses settled payment with offsetting ledger entries.</div>
+          <div>&bull; <strong>5. Webhooks (`GatewayWebhookJob`)</strong>: Verifies `X-PayRail-Signature` (HMAC-SHA256) &amp; processes events via Sidekiq.</div>
         </div>
       </div>
 

@@ -27,6 +27,7 @@ class CreateUsers < ActiveRecord::Migration[8.1]
       t.string :wallet_number, null: false
       t.string :currency, default: "USD", null: false
       t.bigint :balance_cents, default: 0, null: false
+      t.bigint :held_balance_cents, default: 0, null: false
       t.string :status, default: "active", null: false
       t.integer :lock_version, default: 0, null: false
 
@@ -42,17 +43,30 @@ class CreateUsers < ActiveRecord::Migration[8.1]
       t.references :recipient, null: false, foreign_key: { to_table: :users }
       t.bigint :amount_cents, null: false
       t.bigint :fee_cents, default: 0, null: false
+      t.bigint :net_amount_cents, default: 0, null: false
       t.string :currency, default: "USD", null: false
-      t.string :payment_type, default: "transfer", null: false # "transfer", "deposit", "refund"
-      t.string :status, default: "completed", null: false      # "pending", "completed", "refunded", "failed"
+      t.string :payment_type, default: "transfer", null: false # "transfer", "deposit", "refund", "gateway_charge"
+      t.string :status, default: "completed", null: false      # "pending", "authorized", "captured", "completed", "voided", "refunded", "failed"
       t.string :description
       t.bigint :parent_payment_id
+
+      # Payment Gateway Lifecycle Metadata
+      t.string :gateway_provider, default: "payrail_gateway"
+      t.string :gateway_transaction_id
+      t.string :authorization_code
+      t.string :payment_method_token
+      t.string :failure_reason
+      t.datetime :authorized_at
+      t.datetime :captured_at
+      t.datetime :voided_at
+      t.datetime :refunded_at
 
       t.timestamps
     end
 
     add_index :payments, :reference_id, unique: true
     add_index :payments, :idempotency_key, unique: true
+    add_index :payments, :gateway_transaction_id, unique: true
     add_index :payments, [:sender_id, :created_at]
     add_index :payments, [:recipient_id, :created_at]
     add_index :payments, [:status, :created_at]
@@ -69,5 +83,20 @@ class CreateUsers < ActiveRecord::Migration[8.1]
     end
 
     add_index :ledger_entries, [:wallet_id, :created_at]
+
+    create_table :webhook_events do |t|
+      t.string :event_id, null: false
+      t.string :event_type, null: false
+      t.string :gateway_transaction_id
+      t.json :payload, null: false
+      t.string :status, default: "pending", null: false
+      t.string :error_message
+      t.datetime :processed_at
+
+      t.timestamps
+    end
+
+    add_index :webhook_events, :event_id, unique: true
+    add_index :webhook_events, [:status, :created_at]
   end
 end
