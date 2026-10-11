@@ -1,46 +1,15 @@
 module Api
   module V1
     class AuthController < ApplicationController
-      before_action :authenticate_api_user!, only: [:me]
+      before_action :authenticate_api_user!, only: [:me, :logout]
 
-      # POST /api/v1/auth/register
+      # POST /api/v1/auth/sign_up (or /api/v1/auth/register)
       def register
         user = User.new(register_params)
 
         if user.save
-          # Create default USD primary wallet
-          wallet = user.wallets.create!(
-            currency: "USD",
-            balance_cents: 100000 # Give new accounts $1,000.00 initial funding for demo testing
-          )
-
-          # Create initial welcome ledger entry
-          transfer = Transfer.create!(
-            recipient_wallet: wallet,
-            amount_cents: 100000,
-            fee_cents: 0,
-            currency: "USD",
-            transfer_type: "deposit",
-            status: "completed",
-            category: "deposit",
-            description: "PayRail Welcome Bonus Credit"
-          )
-          LedgerEntry.create!(
-            transfer: transfer,
-            wallet: wallet,
-            entry_type: "credit",
-            amount_cents: 100000,
-            balance_after_cents: 100000,
-            description: "Initial Demo Account Credit"
-          )
-
-          # Issue default virtual card
-          user.virtual_cards.create!(
-            wallet: wallet,
-            cardholder_name: user.name.upcase,
-            brand: "Visa",
-            tier: "Black Metal"
-          )
+          # Enqueue asynchronous welcome email via Sidekiq / ActiveJob
+          WelcomeEmailJob.perform_later(user.id)
 
           token = JwtService.encode(user_id: user.id)
 
@@ -53,13 +22,16 @@ module Api
           render json: { errors: user.errors.full_messages }, status: :unprocessable_entity
         end
       end
+      alias_method :sign_up, :register
 
       # POST /api/v1/auth/login
       def login
-        login_identifier = params[:email].to_s.strip.downcase
-        user = User.find_by("LOWER(email) = :id OR LOWER(payrail_tag) = :id", id: login_identifier)
+        user = User.find_by_identifier(params[:email]).first
 
         if user&.authenticate(params[:password])
+          # Enqueue asynchronous login notification & sign-in tracking job
+          LoginNotificationJob.perform_later(user.id, request.remote_ip)
+
           token = JwtService.encode(user_id: user.id)
           render json: {
             message: "Authentication successful",
@@ -69,6 +41,14 @@ module Api
         else
           render json: { error: "Invalid credentials", message: "Check your email/tag and password." }, status: :unauthorized
         end
+      end
+
+      # DELETE /api/v1/auth/logout
+      def logout
+        render json: {
+          message: "Successfully logged out",
+          user_id: current_user.id
+        }, status: :ok
       end
 
       # GET /api/v1/auth/me
@@ -83,7 +63,6 @@ module Api
       end
 
       def serialize_user(user)
-        wallet = user.primary_wallet
         {
           id: user.id,
           name: user.name,
@@ -92,13 +71,8 @@ module Api
           role: user.role,
           avatar_color: user.avatar_color,
           api_key: user.api_key,
-          primary_wallet: wallet ? {
-            id: wallet.id,
-            wallet_number: wallet.wallet_number,
-            currency: wallet.currency,
-            balance_cents: wallet.balance_cents,
-            formatted_balance: wallet.formatted_balance
-          } : nil
+          sign_in_count: user.sign_in_count,
+          last_sign_in_at: user.last_sign_in_at
         }
       end
     end

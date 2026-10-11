@@ -1,11 +1,6 @@
 class User < ApplicationRecord
   has_secure_password
 
-  has_many :wallets, dependent: :destroy
-  has_many :virtual_cards, dependent: :destroy
-  has_many :payment_links, dependent: :destroy
-  has_many :webhook_endpoints, dependent: :destroy
-
   validates :name, presence: true
   validates :email, presence: true, uniqueness: { case_sensitive: false }, format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :payrail_tag, presence: true, uniqueness: { case_sensitive: false }
@@ -13,16 +8,20 @@ class User < ApplicationRecord
   before_validation :normalize_attributes
   before_create :generate_api_credentials
 
-  def primary_wallet
-    wallets.find_by(currency: "USD") || wallets.first
-  end
+  # Optimized query scope for finding user by email or payrail_tag
+  scope :find_by_identifier, ->(identifier) {
+    clean_id = identifier.to_s.strip.downcase
+    clean_tag = clean_id.delete_prefix("$")
+    where("LOWER(email) = :id OR LOWER(payrail_tag) = :tag", id: clean_id, tag: "$#{clean_tag}")
+  }
 
-  def total_balance_cents
-    wallets.sum(:balance_cents)
-  end
+  scope :active_customers, -> { where(role: "customer", kyc_verified: true).order(created_at: :desc) }
 
-  def formatted_total_balance
-    format("$%.2f", total_balance_cents / 100.0)
+  def record_sign_in!
+    update_columns(
+      last_sign_in_at: Time.current,
+      sign_in_count: sign_in_count + 1
+    )
   end
 
   private

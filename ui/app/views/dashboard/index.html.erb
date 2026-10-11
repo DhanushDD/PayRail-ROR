@@ -1,269 +1,61 @@
-<div class="space-y-6">
-  
-  <!-- Top Greeting Banner (PayPal Consumer Experience) -->
-  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-2">
-    <div>
-      <h1 class="text-2xl font-bold text-slate-900 tracking-tight">
-        Good evening, <%= current_user.name.split.first %>
-      </h1>
-      <p class="text-xs text-slate-500 mt-0.5 flex items-center space-x-1.5">
-        <span>Personal Account</span>
-        <span>&bull;</span>
-        <span class="font-mono text-[#0070BA] font-semibold"><%= current_user.payrail_tag %></span>
-        <span>&bull;</span>
-        <span class="inline-flex items-center text-emerald-600 font-semibold text-[11px]">
-          <svg class="w-3.5 h-3.5 mr-0.5" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-          </svg>
-          Verified
-        </span>
-      </p>
-    </div>
-  </div>
-
-  <!-- Main 2-Column Grid (PayPal Standard Layout) -->
-  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-
-    <!-- Left Column (7 cols): Balance Tile + Send Again + Recent Activity -->
-    <div class="lg:col-span-7 space-y-6">
-      
-      <!-- 1. PayPal-Style Balance Tile -->
-      <div class="bg-white rounded-2xl p-6 sm:p-7 border border-slate-200 shadow-sm relative">
-        <div class="flex items-center justify-between mb-3">
-          <div class="flex items-center space-x-2">
-            <div class="w-6 h-6 rounded-full bg-blue-50 text-[#0070BA] flex items-center justify-center font-bold text-xs">
-              $
-            </div>
-            <h2 class="text-sm font-bold text-slate-700 uppercase tracking-wide">PayRail Balance</h2>
-          </div>
-          <span class="text-xs font-semibold text-slate-500 font-mono"><%= @wallet.currency %></span>
+<div class="max-w-3xl mx-auto space-y-6">
+  <div class="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-100">
+      <div class="flex items-center space-x-4">
+        <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-white font-bold text-lg shadow-sm" style="background-color: <%= @user.avatar_color %>">
+          <%= @user.name.first(2).upcase %>
         </div>
-
-        <div class="flex items-baseline space-x-2 my-2">
-          <span class="text-4xl sm:text-5xl font-extrabold text-slate-900 tracking-tight font-sans">
-            <%= @wallet.formatted_balance %>
-          </span>
-          <span class="text-sm font-semibold text-slate-500">Available</span>
-        </div>
-
-        <p class="text-xs text-slate-500 mb-6">
-          Estimated total including all linked wallets and accounts
-        </p>
-
-        <!-- PayPal Standard Pill Buttons -->
-        <div class="flex flex-wrap items-center gap-3 pt-4 border-t border-slate-100">
-          <button onclick="document.getElementById('depositModal').classList.remove('hidden')" class="px-6 py-2.5 rounded-full text-xs font-bold bg-[#0070BA] hover:bg-[#003087] text-white shadow-sm transition">
-            Add Money
-          </button>
-          
-          <a href="<%= new_transfer_path %>" class="px-6 py-2 rounded-full text-xs font-bold border-2 border-[#0070BA] text-[#0070BA] hover:bg-blue-50 transition">
-            Send Payment
-          </a>
-
-          <a href="<%= new_transfer_path %>" class="px-5 py-2 rounded-full text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition">
-            Request
-          </a>
+        <div>
+          <h1 class="text-2xl font-bold text-slate-900">Welcome, <%= @user.name %>!</h1>
+          <p class="text-xs text-slate-500 font-mono mt-0.5"><%= @user.email %> &bull; <%= @user.payrail_tag %></p>
         </div>
       </div>
 
-      <!-- 2. "Send Again" / Quick Pay Contacts (Paytm & PayPal signature feature) -->
-      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="text-sm font-bold text-slate-800">Send Again</h3>
-          <a href="<%= new_transfer_path %>" class="text-xs font-semibold text-[#0070BA] hover:underline">See all</a>
-        </div>
+      <div>
+        <%= button_to logout_path, method: :delete, class: "px-5 py-2.5 rounded-full bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs transition cursor-pointer" do %>
+          Sign Out
+        <% end %>
+      </div>
+    </div>
 
-        <div class="flex items-center space-x-5 overflow-x-auto pb-2">
-          <!-- Add New Quick Button -->
-          <a href="<%= new_transfer_path %>" class="flex flex-col items-center space-y-1.5 flex-shrink-0 group">
-            <div class="w-13 h-13 rounded-full border-2 border-dashed border-slate-300 group-hover:border-[#0070BA] flex items-center justify-center text-slate-400 group-hover:text-[#0070BA] transition">
-              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-              </svg>
-            </div>
-            <span class="text-[11px] font-semibold text-slate-600 group-hover:text-[#0070BA]">Send to new</span>
-          </a>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
+      <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80">
+        <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Account Role &amp; Status</div>
+        <div class="text-sm font-bold text-slate-800 mt-1 capitalize"><%= @user.role %> (<%= @user.kyc_verified? ? "Verified" : "Pending" %>)</div>
+      </div>
 
-          <!-- Peers Avatars -->
-          <% @other_users.each do |peer| %>
-            <a href="<%= new_transfer_path(recipient: peer.payrail_tag) %>" class="flex flex-col items-center space-y-1.5 flex-shrink-0 group">
-              <div class="w-13 h-13 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-sm group-hover:ring-2 group-hover:ring-[#0070BA] transition" style="background-color: <%= peer.avatar_color %>">
-                <%= peer.name.first(2).upcase %>
-              </div>
-              <span class="text-[11px] font-semibold text-slate-700 group-hover:text-[#0070BA] truncate max-w-[64px] text-center">
-                <%= peer.name.split.first %>
-              </span>
-            </a>
+      <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80">
+        <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Sign-In Activity</div>
+        <div class="text-sm font-bold text-slate-800 mt-1">
+          <%= @user.sign_in_count %> logins
+          <% if @user.last_sign_in_at %>
+            <span class="text-xs font-normal text-slate-500">(Last: <%= @user.last_sign_in_at.strftime("%b %d, %H:%M") %>)</span>
           <% end %>
         </div>
       </div>
-
-      <!-- 3. Recent Activity (PayPal statement style) -->
-      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-        <div class="p-6 border-b border-slate-100 flex items-center justify-between">
-          <div>
-            <h3 class="text-base font-bold text-slate-900">Recent Activity</h3>
-            <p class="text-xs text-slate-500 mt-0.5">Your latest payments, deposits, and transfers</p>
-          </div>
-          <a href="<%= ledger_path %>" class="text-xs font-bold text-[#0070BA] hover:underline">
-            View all &rarr;
-          </a>
-        </div>
-
-        <% if @transfers.any? %>
-          <div class="divide-y divide-slate-100">
-            <% @transfers.each do |tx| %>
-              <% direction = tx.direction_for(@wallet) %>
-              <% is_credit = direction == "credit" %>
-              <div class="p-4 sm:px-6 hover:bg-slate-50 transition cursor-pointer flex items-center justify-between" onclick="window.location='<%= transfer_path(tx.reference_id) %>'">
-                <div class="flex items-center space-x-3.5">
-                  <!-- Circular Category Icon -->
-                  <div class="w-10 h-10 rounded-full <%= is_credit ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-600' %> flex items-center justify-center flex-shrink-0">
-                    <% if tx.category == 'dining' %>
-                      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                      </svg>
-                    <% elsif tx.category == 'deposit' %>
-                      <svg class="w-5 h-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                      </svg>
-                    <% else %>
-                      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-                      </svg>
-                    <% end %>
-                  </div>
-
-                  <div>
-                    <div class="text-sm font-bold text-slate-800">
-                      <% if is_credit %>
-                        <%= tx.sender_user ? tx.sender_user.name : "Deposit from Bank Rail" %>
-                      <% else %>
-                        <%= tx.recipient_user ? tx.recipient_user.name : "Payment" %>
-                      <% end %>
-                    </div>
-                    <div class="text-xs text-slate-500 flex items-center space-x-2">
-                      <span><%= tx.created_at.strftime("%b %d") %></span>
-                      <span>&bull;</span>
-                      <span class="capitalize"><%= tx.description.presence || tx.category %></span>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="text-right">
-                  <div class="text-sm font-bold <%= is_credit ? 'text-emerald-600' : 'text-slate-900' %>">
-                    <%= is_credit ? "+" : "-" %><%= tx.formatted_amount %>
-                  </div>
-                  <div class="text-[11px] text-slate-400 font-medium">
-                    <%= tx.status.titleize %>
-                  </div>
-                </div>
-              </div>
-            <% end %>
-          </div>
-        <% else %>
-          <div class="text-center py-12">
-            <p class="text-slate-500 text-xs">No recent transactions to display.</p>
-          </div>
-        <% end %>
-      </div>
-
     </div>
 
-    <!-- Right Column (5 cols): Banks & Cards + Fast Send Widget -->
-    <div class="lg:col-span-5 space-y-6">
+    <div class="mt-6 pt-6 border-t border-slate-100 space-y-4">
+      <h2 class="text-sm font-bold text-slate-800 uppercase tracking-wider">RESTful API Credentials &amp; Background Jobs</h2>
       
-      <!-- 1. Banks and Cards (PayPal Signature Box) -->
-      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4">
-        <div class="flex items-center justify-between">
-          <h3 class="text-sm font-bold text-slate-900">Banks and cards</h3>
-          <a href="<%= cards_path %>" class="text-xs font-semibold text-[#0070BA] hover:underline">Manage</a>
-        </div>
-
-        <!-- Realistic Virtual Debit Card -->
-        <% if @virtual_card %>
-          <div class="bg-gradient-to-tr from-[#003087] via-[#004B99] to-[#0070BA] rounded-2xl p-5 text-white shadow-md relative overflow-hidden">
-            <div class="flex items-center justify-between mb-4">
-              <span class="text-xs font-black tracking-widest uppercase">PayRail</span>
-              <span class="text-[10px] px-2 py-0.5 rounded-full bg-white/20 font-bold uppercase"><%= @virtual_card.brand %></span>
-            </div>
-
-            <div class="my-3">
-              <div class="w-8 h-6 rounded bg-amber-300/80 border border-amber-400/60 mb-2"></div>
-              <div class="text-base font-mono font-bold tracking-wider">
-                <%= @virtual_card.masked_number %>
-              </div>
-            </div>
-
-            <div class="flex items-end justify-between text-xs pt-2 border-t border-white/20">
-              <div>
-                <div class="text-[9px] uppercase tracking-wider text-slate-200">Cardholder</div>
-                <div class="font-bold"><%= @virtual_card.cardholder_name %></div>
-              </div>
-              <div>
-                <div class="text-[9px] uppercase tracking-wider text-slate-200">Expires</div>
-                <div class="font-mono font-bold"><%= @virtual_card.formatted_expiry %></div>
-              </div>
-              <div>
-                <%= button_to toggle_freeze_card_path(@virtual_card), method: :patch, class: "px-2.5 py-1 rounded-full text-[10px] font-bold #{@virtual_card.active? ? 'bg-white/20 hover:bg-white/30 text-white' : 'bg-rose-500 text-white'} transition" do %>
-                  <%= @virtual_card.active? ? "Active" : "Frozen" %>
-                <% end %>
-              </div>
-            </div>
-          </div>
-        <% end %>
-
-        <!-- Linked Bank Account Tile -->
-        <div class="p-3.5 rounded-xl border border-slate-200 hover:border-slate-300 transition flex items-center justify-between">
-          <div class="flex items-center space-x-3">
-            <div class="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-600">
-              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-              </svg>
-            </div>
-            <div>
-              <div class="text-xs font-bold text-slate-800">Chase Bank Checking</div>
-              <div class="text-[11px] text-slate-500 font-mono">•••• 4021 &bull; Direct Deposit</div>
-            </div>
-          </div>
-          <span class="text-[11px] font-bold text-emerald-600">Linked</span>
-        </div>
-
-        <div class="pt-2 text-center">
-          <button onclick="document.getElementById('depositModal').classList.remove('hidden')" class="text-xs font-bold text-[#0070BA] hover:underline flex items-center justify-center space-x-1 w-full">
-            <span>+ Link a card or bank</span>
-          </button>
-        </div>
+      <div>
+        <label class="block text-xs font-semibold text-slate-500 mb-1">API Key (`X-API-Key`)</label>
+        <code class="block w-full p-3 rounded-xl bg-slate-900 text-emerald-400 font-mono text-xs overflow-x-auto"><%= @user.api_key %></code>
       </div>
 
-      <!-- 2. Fast Payment Box (PayPal / Paytm Send Money tile) -->
-      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
-        <h3 class="text-sm font-bold text-slate-900 mb-1">Quick Send</h3>
-        <p class="text-xs text-slate-500 mb-4">Pay anyone with their $tag or email instantly</p>
-
-        <%= form_with url: transfers_path, method: :post, local: true, class: "space-y-3" do |f| %>
-          <div>
-            <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1">To</label>
-            <%= f.text_field :recipient, placeholder: "$alice, $bob, or user@payrail.io", required: true, class: "w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-800 text-xs font-mono placeholder-slate-400 focus:outline-none focus:border-[#0070BA] focus:bg-white" %>
-          </div>
-
-          <div>
-            <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1">Amount ($)</label>
-            <%= f.number_field :amount, step: 0.01, min: 0.50, placeholder: "0.00", required: true, class: "w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-base font-bold font-mono placeholder-slate-400 focus:outline-none focus:border-[#0070BA] focus:bg-white" %>
-          </div>
-
-          <div>
-            <%= f.text_field :description, placeholder: "What is this for? (optional)", class: "w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-800 text-xs placeholder-slate-400 focus:outline-none focus:border-[#0070BA] focus:bg-white" %>
-          </div>
-
-          <div class="pt-2">
-            <%= f.submit "Send Money Now", class: "w-full py-2.5 bg-[#0070BA] hover:bg-[#003087] text-white font-bold rounded-full text-xs shadow-sm transition cursor-pointer" %>
-          </div>
-        <% end %>
+      <div>
+        <label class="block text-xs font-semibold text-slate-500 mb-1">Active JWT Bearer Token</label>
+        <code class="block w-full p-3 rounded-xl bg-slate-900 text-sky-400 font-mono text-xs break-all"><%= @jwt_token %></code>
       </div>
 
+      <div class="p-4 rounded-2xl bg-blue-50/60 border border-blue-200 text-xs text-slate-700 space-y-1.5">
+        <div class="font-bold text-[#003087]">Active Background Jobs (Sidekiq &amp; Cron):</div>
+        <ul class="list-disc pl-4 space-y-1">
+          <li><code class="font-mono font-semibold">WelcomeEmailJob</code> — Triggered asynchronously on <code class="font-mono">sign_up</code> via ActionMailer.</li>
+          <li><code class="font-mono font-semibold">LoginNotificationJob</code> — Triggered asynchronously on <code class="font-mono">login</code> to update sign-in metrics and send security alert.</li>
+          <li><code class="font-mono font-semibold">SessionCleanupJob</code> — Scheduled daily via <code class="font-mono">sidekiq-cron</code> (<code class="font-mono">config/schedule.yml</code>).</li>
+        </ul>
+      </div>
     </div>
-
   </div>
-
 </div>

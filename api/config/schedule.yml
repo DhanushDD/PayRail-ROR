@@ -1,0 +1,6 @@
+# Sidekiq-Cron Recurring Schedule
+session_cleanup_job:
+  cron: "0 2 * * *"
+  class: "SessionCleanupJob"
+  queue: maintenance
+  description: "Daily cleanup and audit of inactive user sessions at 2:00 AM"

@@ -9,7 +9,7 @@
         </div>
       </div>
       <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Create your account</h1>
-      <p class="text-xs text-slate-500 mt-1">Join PayRail and get an instant pre-funded $1,000.00 wallet</p>
+      <p class="text-xs text-slate-500 mt-1">Sign up for PayRail authentication &amp; API access</p>
     </div>
 
     <% if @user.errors.any? %>
@@ -25,19 +25,19 @@
     <%= form_with model: @user, url: signup_path, local: true, class: "space-y-4" do |f| %>
       <div>
         <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Full Legal Name</label>
-        <%= f.text_field :name, placeholder: "e.g. Maya Chen", required: true, class: "w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 text-sm placeholder-slate-400 focus:outline-none focus:border-[#0070BA] focus:ring-2 focus:ring-blue-100 transition" %>
+        <%= f.text_field :name, placeholder: "e.g. Dhanush Daran", required: true, class: "w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 text-sm placeholder-slate-400 focus:outline-none focus:border-[#0070BA] focus:ring-2 focus:ring-blue-100 transition" %>
       </div>
 
       <div>
         <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Email address</label>
-        <%= f.email_field :email, placeholder: "maya@example.com", required: true, class: "w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 text-sm placeholder-slate-400 focus:outline-none focus:border-[#0070BA] focus:ring-2 focus:ring-blue-100 transition" %>
+        <%= f.email_field :email, placeholder: "dhanush@example.com", required: true, class: "w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 text-sm placeholder-slate-400 focus:outline-none focus:border-[#0070BA] focus:ring-2 focus:ring-blue-100 transition" %>
       </div>
 
       <div>
         <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">PayRail Handle ($tag)</label>
         <div class="relative">
           <span class="absolute left-4 top-3 text-[#0070BA] font-bold text-sm">$</span>
-          <%= f.text_field :payrail_tag, placeholder: "mayachen", required: true, class: "w-full pl-8 pr-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 text-sm font-mono placeholder-slate-400 focus:outline-none focus:border-[#0070BA] focus:ring-2 focus:ring-blue-100 transition" %>
+          <%= f.text_field :payrail_tag, placeholder: "dhanush", required: true, class: "w-full pl-8 pr-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 text-sm font-mono placeholder-slate-400 focus:outline-none focus:border-[#0070BA] focus:ring-2 focus:ring-blue-100 transition" %>
         </div>
       </div>
 

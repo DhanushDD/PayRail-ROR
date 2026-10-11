@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" class="h-full bg-[#F5F7FA] text-slate-800">
   <head>
-    <title><%= content_for(:title) || "PayRail — Digital Wallet & Payments" %></title>
+    <title><%= content_for(:title) || "PayRail — Authentication & Background Jobs" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
@@ -13,30 +13,6 @@
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            fontFamily: {
-              sans: ['Inter', 'system-ui', 'sans-serif'],
-              mono: ['"JetBrains Mono"', 'monospace'],
-            },
-            colors: {
-              pp: {
-                navy: '#003087',      // PayPal Deep Navy
-                blue: '#0070BA',      // PayPal Action Blue
-                hover: '#005EA6',     // PayPal Button Hover
-                light: '#F5F7FA',     // PayPal Background Gray
-                border: '#E1E7EC',    // PayPal Border
-                text: '#0F172A',      // Dark Slate Text
-                muted: '#64748B',     // Muted Gray
-                accent: '#00BAF2',    // Paytm Cyan Accent
-              }
-            }
-          }
-        }
-      }
-    </script>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
     <style>
@@ -47,94 +23,49 @@
 
   <body class="min-h-full flex flex-col bg-[#F5F7FA] text-[#0F172A] antialiased">
     
-    <!-- PayPal-Style Deep Navy Navigation Header -->
+    <!-- Deep Navy Navigation Header -->
     <header class="bg-[#003087] text-white shadow-md sticky top-0 z-40">
-      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between">
+      <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         
-        <!-- Left: Logo & Primary Navigation -->
-        <div class="flex items-center space-x-8">
-          <a href="<%= logged_in? ? dashboard_path : root_path %>" class="flex items-center space-x-2.5 py-4">
-            <!-- Iconic PayPal/Paytm-style Monogram -->
+        <!-- Left: Logo -->
+        <div class="flex items-center space-x-6">
+          <a href="<%= logged_in? ? dashboard_path : login_path %>" class="flex items-center space-x-2.5">
             <div class="w-9 h-9 rounded-xl bg-white flex items-center justify-center shadow-sm">
               <span class="text-xl font-black italic tracking-tighter text-[#003087]">P</span>
               <span class="text-xl font-black italic tracking-tighter text-[#0070BA] -ml-1">R</span>
             </div>
-            <div class="flex items-center space-x-1.5">
-              <span class="text-xl font-extrabold tracking-tight text-white">PayRail</span>
-            </div>
+            <span class="text-xl font-extrabold tracking-tight text-white">PayRail</span>
           </a>
-
-          <% if logged_in? %>
-            <!-- Consumer App Nav Links -->
-            <nav class="hidden md:flex items-center space-x-1 text-sm font-semibold">
-              <a href="<%= dashboard_path %>" class="px-3.5 py-2 rounded-full <%= current_page?(dashboard_path) ? 'bg-[#002266] text-white' : 'text-slate-200 hover:text-white hover:bg-white/10' %> transition">
-                Dashboard
-              </a>
-              <a href="<%= new_transfer_path %>" class="px-3.5 py-2 rounded-full <%= current_page?(new_transfer_path) ? 'bg-[#002266] text-white' : 'text-slate-200 hover:text-white hover:bg-white/10' %> transition">
-                Send &amp; Request
-              </a>
-              <a href="<%= cards_path %>" class="px-3.5 py-2 rounded-full <%= current_page?(cards_path) ? 'bg-[#002266] text-white' : 'text-slate-200 hover:text-white hover:bg-white/10' %> transition">
-                Wallet
-              </a>
-              <a href="<%= ledger_path %>" class="px-3.5 py-2 rounded-full <%= current_page?(ledger_path) ? 'bg-[#002266] text-white' : 'text-slate-200 hover:text-white hover:bg-white/10' %> transition">
-                Activity
-              </a>
-              <a href="<%= developer_path %>" class="px-3.5 py-2 rounded-full <%= current_page?(developer_path) ? 'bg-[#002266] text-white' : 'text-slate-200 hover:text-white hover:bg-white/10' %> transition flex items-center space-x-1.5">
-                <span>Developer</span>
-                <span class="text-[10px] px-1.5 py-0.2 rounded-full bg-emerald-400 text-slate-900 font-bold">API</span>
-              </a>
-            </nav>
-          <% end %>
         </div>
 
-        <!-- Right: Actions & User Menu -->
+        <!-- Right: Auth Actions -->
         <div class="flex items-center space-x-4">
           <% if logged_in? %>
-            <!-- Top Up Button (Paytm Add Money style) -->
-            <button onclick="document.getElementById('depositModal').classList.remove('hidden')" class="hidden sm:inline-flex items-center space-x-1.5 px-4 py-1.5 rounded-full text-xs font-bold bg-[#0070BA] hover:bg-[#005EA6] text-white shadow-sm transition">
-              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-              </svg>
-              <span>Add Money</span>
-            </button>
-
-            <!-- Notifications Bell -->
-            <button class="text-slate-200 hover:text-white p-2 rounded-full hover:bg-white/10 transition relative">
-              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-              </svg>
-              <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-emerald-400"></span>
-            </button>
-
-            <!-- User Avatar & Tag -->
-            <div class="flex items-center space-x-3 pl-3 border-l border-white/20">
+            <div class="flex items-center space-x-3">
               <div class="w-8 h-8 rounded-full bg-white text-[#003087] font-bold text-xs flex items-center justify-center shadow-sm">
                 <%= current_user.name.first(2).upcase %>
               </div>
-              <div class="hidden lg:block text-left leading-tight">
+              <div class="hidden sm:block text-left leading-tight">
                 <div class="text-xs font-bold text-white"><%= current_user.name %></div>
                 <div class="text-[11px] text-slate-300 font-mono"><%= current_user.payrail_tag %></div>
               </div>
-              <%= button_to logout_path, method: :delete, class: "text-xs font-semibold text-slate-300 hover:text-white hover:underline transition", title: "Log Out" do %>
+              <%= button_to logout_path, method: :delete, class: "ml-2 px-4 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-xs font-bold text-white transition cursor-pointer" do %>
                 Log Out
               <% end %>
             </div>
           <% else %>
-            <a href="<%= login_path %>" class="px-5 py-2 text-sm font-bold text-white hover:text-slate-200 transition">Log In</a>
-            <a href="<%= signup_path %>" class="px-5 py-2 text-sm font-bold rounded-full bg-[#0070BA] hover:bg-[#005EA6] text-white shadow-sm transition">Sign Up</a>
+            <a href="<%= login_path %>" class="px-4 py-2 text-sm font-bold text-white hover:text-slate-200 transition">Log In</a>
+            <a href="<%= signup_path %>" class="px-4 py-2 text-sm font-bold rounded-full bg-[#0070BA] hover:bg-[#005EA6] text-white shadow-sm transition">Sign Up</a>
           <% end %>
         </div>
 
       </div>
     </header>
 
-    <!-- Flash Notices & Alerts (PayPal banner style) -->
+    <!-- Flash Notices & Alerts -->
     <% if flash[:notice].present? %>
       <div class="bg-emerald-50 border-b border-emerald-200 px-4 py-3">
-        <div class="max-w-6xl mx-auto flex items-center text-sm text-emerald-800 font-medium">
-          <svg class="w-5 h-5 text-emerald-600 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-          </svg>
+        <div class="max-w-5xl mx-auto flex items-center text-sm text-emerald-800 font-medium">
           <span><%= flash[:notice] %></span>
         </div>
       </div>
@@ -142,86 +73,22 @@
 
     <% if flash[:alert].present? %>
       <div class="bg-rose-50 border-b border-rose-200 px-4 py-3">
-        <div class="max-w-6xl mx-auto flex items-center text-sm text-rose-800 font-medium">
-          <svg class="w-5 h-5 text-rose-600 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-          </svg>
+        <div class="max-w-5xl mx-auto flex items-center text-sm text-rose-800 font-medium">
           <span><%= flash[:alert] %></span>
         </div>
       </div>
     <% end %>
 
     <!-- Main Body Container -->
-    <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <main class="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <%= yield %>
     </main>
 
-    <!-- Add Money / Deposit Modal (PayPal style) -->
-    <% if logged_in? %>
-      <div id="depositModal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl relative border border-slate-200">
-          <button onclick="document.getElementById('depositModal').classList.add('hidden')" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 p-1 rounded-full hover:bg-slate-100">
-            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-
-          <div class="text-center mb-6">
-            <div class="w-12 h-12 rounded-full bg-blue-50 text-[#0070BA] flex items-center justify-center mx-auto mb-3">
-              <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-              </svg>
-            </div>
-            <h3 class="text-xl font-bold text-slate-900">Add Money to Balance</h3>
-            <p class="text-xs text-slate-500 mt-1">Transfer funds instantly from your linked bank or card</p>
-          </div>
-
-          <%= form_with url: deposits_path, method: :post, local: true, class: "space-y-4" do |f| %>
-            <div>
-              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Amount (USD)</label>
-              <div class="relative">
-                <span class="absolute left-4 top-3 text-lg font-bold text-slate-400">$</span>
-                <%= f.number_field :amount, step: 0.01, min: 1, value: 500.00, required: true, class: "w-full pl-9 pr-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 text-lg font-bold font-mono focus:outline-none focus:border-[#0070BA] focus:ring-2 focus:ring-blue-100" %>
-              </div>
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Payment Method</label>
-              <%= f.select :payment_method, [
-                ["Chase Bank Checking •••• 4021 (Instant ACH - Free)", "instant_ach"],
-                ["Visa Debit Card •••• 8821 (Instant)", "card_rail"],
-                ["Federal Reserve Wire / Settlement", "wire_transfer"]
-              ], {}, class: "w-full px-3.5 py-3 bg-white border border-slate-300 rounded-xl text-slate-800 text-sm font-medium focus:outline-none focus:border-[#0070BA]" %>
-            </div>
-
-            <div class="pt-3">
-              <%= f.submit "Add Funds Now", class: "w-full py-3.5 bg-[#0070BA] hover:bg-[#003087] text-white font-bold rounded-full shadow-md transition cursor-pointer text-sm" %>
-            </div>
-          <% end %>
-        </div>
-      </div>
-    <% end %>
-
-    <!-- Clean Trusted Consumer Footer (PayPal / Paytm style) -->
-    <footer class="bg-white border-t border-slate-200 mt-auto py-8">
-      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex flex-col md:flex-row items-center justify-between text-xs text-slate-500 gap-4">
-          <div class="flex items-center space-x-6">
-            <span class="font-bold text-slate-700">PayRail</span>
-            <a href="#" class="hover:underline">Help &amp; Contact</a>
-            <a href="#" class="hover:underline">Security</a>
-            <a href="#" class="hover:underline">Apps</a>
-            <a href="#" class="hover:underline">Privacy</a>
-            <a href="#" class="hover:underline">Legal</a>
-          </div>
-          <div>
-            <span>&copy; 1999–<%= Time.current.year %> PayRail Inc. All rights reserved.</span>
-          </div>
-        </div>
-        <div class="mt-4 pt-4 border-t border-slate-100 flex flex-wrap items-center justify-between text-[11px] text-slate-400 gap-2">
-          <span>Enterprise Payment Ledger Architecture &bull; Double-Entry Zero Sum Verification</span>
-          <span class="font-mono">Pessimistic Concurrency &bull; Idempotency-Key Support</span>
-        </div>
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 mt-auto py-6">
+      <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-2">
+        <span><strong class="text-slate-700">PayRail</strong> &bull; Ruby on Rails RESTful Auth, Sidekiq Jobs &amp; RSpec</span>
+        <span class="font-mono">JWT &bull; Sidekiq-Cron &bull; ActionMailer</span>
       </div>
     </footer>
 

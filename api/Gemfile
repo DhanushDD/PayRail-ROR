@@ -16,6 +16,11 @@ gem "jwt", "~> 2.7"
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem "tzinfo-data", platforms: %i[ windows jruby ]
 
+# Background Job Processing with Sidekiq & Cron
+gem "sidekiq", "~> 7.2"
+gem "sidekiq-cron", "~> 1.12"
+gem "redis", "~> 5.0"
+
 # Use the database-backed adapters for Rails.cache, Active Job, and Action Cable
 gem "solid_cache"
 gem "solid_queue"
@@ -37,6 +42,9 @@ gem "image_processing", "~> 1.2"
 gem "rack-cors"
 
 group :development, :test do
+  # RSpec testing framework for test-driven development
+  gem "rspec-rails", "~> 7.1"
+
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
 
@@ -49,3 +57,4 @@ group :development, :test do
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
 end
+
