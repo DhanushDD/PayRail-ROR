@@ -6,6 +6,7 @@ class DashboardController < ApplicationController
     @wallet = @user.wallet
     @peers = User.where.not(id: @user.id).order(:name)
     @payments = @user.recent_payments(15)
+    @ledger_entries = @user.recent_ledger_entries(10)
     @jwt_token = JwtService.encode(user_id: @user.id)
   end
 end

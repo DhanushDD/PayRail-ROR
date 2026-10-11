@@ -13,7 +13,8 @@ class PaymentsController < ApplicationController
       sender: current_user,
       recipient: recipient,
       amount_cents: amount_cents,
-      description: params[:description]
+      description: params[:description],
+      idempotency_key: params[:idempotency_key].presence
     )
 
     flash[:notice] = "Sent #{payment.formatted_amount} to #{recipient.name} (#{recipient.payrail_tag})! Ref: #{payment.reference_id}"
@@ -32,7 +33,17 @@ class PaymentsController < ApplicationController
 
     flash[:notice] = "Added #{payment.formatted_amount} to your PayRail Wallet! Ref: #{payment.reference_id}"
     redirect_to dashboard_path
-  rescue ArgumentError => e
+  rescue ArgumentError, StandardError => e
+    flash[:alert] = e.message
+    redirect_to dashboard_path
+  end
+
+  def refund
+    payment = Payment.find(params[:id])
+    refund_payment = payment.refund!(actor: current_user)
+    flash[:notice] = "Refunded #{refund_payment.formatted_amount} to #{refund_payment.recipient.name} (#{refund_payment.reference_id})."
+    redirect_to dashboard_path
+  rescue StandardError => e
     flash[:alert] = e.message
     redirect_to dashboard_path
   end

@@ -34,6 +34,10 @@ class User < ApplicationRecord
     Payment.for_user(id).includes(:sender, :recipient).order(created_at: :desc).limit(limit)
   end
 
+  def recent_ledger_entries(limit = 15)
+    wallet ? wallet.ledger_entries.includes(:payment).order(created_at: :desc).limit(limit) : []
+  end
+
   def record_sign_in!
     update_columns(
       last_sign_in_at: Time.current,
@@ -57,6 +61,8 @@ class User < ApplicationRecord
   end
 
   def create_default_wallet!
-    create_wallet!(currency: "USD", balance_cents: 100_000) unless wallet
+    return if wallet
+    w = create_wallet!(currency: "USD", balance_cents: 0)
+    w.deposit!(100_000, description: "PayRail Welcome Bonus Credit")
   end
 end

@@ -18,7 +18,7 @@
   <!-- Main 2-Column Payment App Grid -->
   <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
-    <!-- Left Column (7 cols): Wallet Balance + Recent Payment Activity -->
+    <!-- Left Column (7 cols): Wallet Balance + Recent Payment Activity + Double-Entry Ledger -->
     <div class="lg:col-span-7 space-y-6">
 
       <!-- 1. PayRail Balance Card -->
@@ -56,7 +56,7 @@
         <div class="p-6 border-b border-slate-100 flex items-center justify-between">
           <div>
             <h3 class="text-base font-bold text-slate-900">Recent Payment Activity</h3>
-            <p class="text-xs text-slate-500 mt-0.5">Instant P2P transfers and wallet deposits</p>
+            <p class="text-xs text-slate-500 mt-0.5">P2P transfers, deposits, and instant refunds</p>
           </div>
           <span class="text-xs font-mono text-slate-400"><%= @payments.count %> transactions</span>
         </div>
@@ -74,13 +74,15 @@
                     <div class="text-sm font-bold text-slate-900">
                       <% if payment.payment_type == "deposit" %>
                         Added Funds to Wallet
+                      <% elsif payment.payment_type == "refund" %>
+                        <%= is_credit ? "Refund from #{payment.sender&.name}" : "Refunded to #{payment.recipient.name}" %>
                       <% elsif is_credit %>
                         From <%= payment.sender&.name || "PayRail User" %> (<span class="font-mono text-xs text-slate-500"><%= payment.sender&.payrail_tag %></span>)
                       <% else %>
                         To <%= payment.recipient.name %> (<span class="font-mono text-xs text-slate-500"><%= payment.recipient.payrail_tag %></span>)
                       <% end %>
                     </div>
-                    <div class="text-xs text-slate-500 flex items-center space-x-2 mt-0.5">
+                    <div class="text-xs text-slate-500 flex flex-wrap items-center gap-x-2 mt-0.5">
                       <span class="font-mono text-[11px] text-slate-400"><%= payment.reference_id %></span>
                       <span>&bull;</span>
                       <span><%= payment.description %></span>
@@ -90,13 +92,20 @@
                   </div>
                 </div>
 
-                <div class="text-right">
-                  <div class="text-sm font-extrabold font-mono <%= is_credit ? 'text-emerald-600' : 'text-slate-900' %>">
-                    <%= is_credit ? "+" : "-" %><%= payment.formatted_amount %>
+                <div class="text-right flex items-center space-x-3">
+                  <div>
+                    <div class="text-sm font-extrabold font-mono <%= is_credit ? 'text-emerald-600' : 'text-slate-900' %>">
+                      <%= is_credit ? "+" : "-" %><%= payment.formatted_amount %>
+                    </div>
+                    <div class="text-[11px] <%= payment.status == 'refunded' ? 'text-amber-600' : 'text-slate-400' %> uppercase font-semibold">
+                      <%= payment.status %>
+                    </div>
                   </div>
-                  <div class="text-[11px] text-slate-400 uppercase font-semibold">
-                    <%= payment.status %>
-                  </div>
+                  <% if payment.refundable_by?(@user) %>
+                    <%= button_to refund_payment_path(payment), method: :post, class: "px-2.5 py-1 rounded-full bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 text-[11px] font-bold transition cursor-pointer" do %>
+                      Refund
+                    <% end %>
+                  <% end %>
                 </div>
               </div>
             <% end %>
@@ -108,6 +117,37 @@
         <% end %>
       </div>
 
+      <!-- 3. Immutable Double-Entry Audit Ledger -->
+      <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="p-6 border-b border-slate-100 flex items-center justify-between">
+          <div>
+            <h3 class="text-base font-bold text-slate-900">Double-Entry Wallet Ledger</h3>
+            <p class="text-xs text-slate-500 mt-0.5">Immutable debit/credit audit trail with running balance verification</p>
+          </div>
+          <span class="text-[11px] px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 font-mono font-semibold">ACID Verified</span>
+        </div>
+
+        <div class="divide-y divide-slate-100">
+          <% @ledger_entries.each do |entry| %>
+            <div class="px-6 py-3.5 flex items-center justify-between text-xs">
+              <div class="flex items-center space-x-3">
+                <span class="px-2 py-0.5 rounded font-mono font-bold uppercase text-[10px] <%= entry.entry_type == 'credit' ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700' %>">
+                  <%= entry.entry_type %>
+                </span>
+                <div>
+                  <div class="font-semibold text-slate-800"><%= entry.description %></div>
+                  <div class="text-[11px] text-slate-400 font-mono"><%= entry.payment.reference_id %></div>
+                </div>
+              </div>
+              <div class="text-right font-mono">
+                <div class="font-bold <%= entry.entry_type == 'credit' ? 'text-emerald-600' : 'text-slate-900' %>"><%= entry.formatted_amount %></div>
+                <div class="text-[11px] text-slate-400">Bal: <%= entry.formatted_balance_after %></div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
     </div>
 
     <!-- Right Column (5 cols): Send Money Form + Quick Peers + API / Sidekiq Status -->
@@ -116,7 +156,7 @@
       <!-- 1. Send Money Card -->
       <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm">
         <h3 class="text-base font-bold text-slate-900">Send Money</h3>
-        <p class="text-xs text-slate-500 mt-0.5 mb-4">Instant P2P transfer by $tag or email (triggers Sidekiq receipt job)</p>
+        <p class="text-xs text-slate-500 mt-0.5 mb-4">Instant P2P transfer by $tag or email (with Idempotency &amp; Sidekiq receipt job)</p>
 
         <% if @peers.any? %>
           <div class="mb-4">
@@ -133,6 +173,7 @@
         <% end %>
 
         <%= form_with url: payments_path, method: :post, local: true, class: "space-y-3.5" do |f| %>
+          <%= f.hidden_field :idempotency_key, value: "idem_#{SecureRandom.hex(8)}" %>
           <div>
             <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Recipient ($tag or Email)</label>
             <%= f.text_field :recipient, id: "recipient_input", placeholder: "e.g. $alice or alice@payrail.io", required: true, class: "w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs font-mono placeholder-slate-400 focus:outline-none focus:border-[#0070BA] focus:bg-white" %>
@@ -159,16 +200,16 @@
 
       <!-- 2. API Key & Sidekiq Background Jobs Summary -->
       <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-3">
-        <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider">Developer &amp; Sidekiq Status</h3>
+        <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider">Payments Fundamentals &amp; Sidekiq</h3>
         <div>
           <div class="text-[11px] font-semibold text-slate-500 mb-1">API Key (`X-API-Key`)</div>
           <code class="block w-full p-2.5 rounded-xl bg-slate-900 text-emerald-400 font-mono text-[11px] overflow-x-auto"><%= @user.api_key %></code>
         </div>
         <div class="text-xs text-slate-600 space-y-1 pt-1">
-          <div>&bull; <code class="font-mono text-[11px] font-semibold">WelcomeEmailJob</code> (on Sign Up)</div>
-          <div>&bull; <code class="font-mono text-[11px] font-semibold">LoginNotificationJob</code> (on Login)</div>
-          <div>&bull; <code class="font-mono text-[11px] font-semibold">PaymentNotificationJob</code> (on Payment Transfer)</div>
-          <div>&bull; <code class="font-mono text-[11px] font-semibold">SessionCleanupJob</code> (Sidekiq-Cron Daily)</div>
+          <div>&bull; <strong>Double-Entry Ledger</strong>: Every transfer records paired <code class="font-mono text-[11px]">debit</code> &amp; <code class="font-mono text-[11px]">credit</code> entries.</div>
+          <div>&bull; <strong>Idempotency Keys</strong>: Prevents duplicate charges on retries.</div>
+          <div>&bull; <strong>Pessimistic Locking</strong>: Deadlock-free ordered row locking.</div>
+          <div>&bull; <strong>Sidekiq Jobs</strong>: <code class="font-mono text-[11px]">WelcomeEmailJob</code>, <code class="font-mono text-[11px]">LoginNotificationJob</code>, <code class="font-mono text-[11px]">PaymentNotificationJob</code>, <code class="font-mono text-[11px]">SessionCleanupJob</code>.</div>
         </div>
       </div>
 

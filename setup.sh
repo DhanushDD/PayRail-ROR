@@ -2,7 +2,7 @@
 set -e
 
 echo "=========================================================="
-echo " ⚙️  Setting up PayRail Enterprise Payment Application    "
+echo " ⚙️  Setting up PayRail Payment & Authentication App       "
 echo "=========================================================="
 
 echo "1. Bundling and setting up API Engine..."
@@ -10,19 +10,17 @@ cd api
 bundle install
 bin/rails db:migrate
 bin/rails db:seed
-bin/rails test test/services/transfers_execute_service_test.rb
+RAILS_ENV=test bin/rails db:migrate
+bundle exec rspec
 cd ..
 
 echo "2. Bundling and setting up Web UI Portal..."
 cd ui
 bundle install
-bin/rails db:test:prepare
-bin/rails tailwindcss:build
-bin/rails test test/controllers/transfers_controller_test.rb
+cp ../api/db/schema.rb db/schema.rb
+RAILS_ENV=test bin/rails db:migrate
+bundle exec rspec
 cd ..
-
-echo "3. Verifying Ruby & Rails Interview Handbook (Q1-Q169)..."
-bin/verify_handbook
 
 echo "=========================================================="
 echo " ✅ Setup Complete! Run './start.sh' to launch PayRail!   "

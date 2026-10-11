@@ -1,6 +1,7 @@
 # Clean Seed Data for PayRail Payment & Authentication App
 puts "Seeding PayRail demo users, wallets, and sample payments..."
 
+LedgerEntry.destroy_all
 Payment.destroy_all
 Wallet.destroy_all
 User.destroy_all
@@ -43,4 +44,4 @@ dhanush.wallet.deposit!(150_000, description: "Initial Bank Deposit")
 Payment.transfer!(sender: dhanush, recipient: alice, amount_cents: 12_500, description: "Team Lunch Split")
 Payment.transfer!(sender: bob, recipient: dhanush, amount_cents: 8_000, description: "API Consulting Fee")
 
-puts "Seeded #{User.count} users, #{Wallet.count} wallets, and #{Payment.count} payments."
+puts "Seeded #{User.count} users, #{Wallet.count} wallets, #{Payment.count} payments, and #{LedgerEntry.count} ledger entries."

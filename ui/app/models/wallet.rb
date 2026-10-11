@@ -1,5 +1,6 @@
 class Wallet < ApplicationRecord
   belongs_to :user
+  has_many :ledger_entries, dependent: :destroy
 
   validates :wallet_number, presence: true, uniqueness: true
   validates :currency, presence: true
@@ -11,22 +12,42 @@ class Wallet < ApplicationRecord
     format("$%.2f", balance_cents / 100.0)
   end
 
-  def deposit!(amount_cents, description: "Added Funds to Wallet")
-    raise ArgumentError, "Amount must be positive" if amount_cents <= 0
+  # Deposit funds into wallet with pessimistic locking and immutable ledger entry
+  def deposit!(amount_cents, description: "Added Funds to Wallet", idempotency_key: nil)
+    raise ArgumentError, "Amount must be positive" if amount_cents.to_i <= 0
 
+    if idempotency_key.present?
+      existing = Payment.find_by(idempotency_key: idempotency_key)
+      return existing if existing
+    end
+
+    payment = nil
     transaction do
       lock!
-      update!(balance_cents: self.balance_cents + amount_cents)
-      Payment.create!(
+      new_balance = balance_cents + amount_cents
+      update!(balance_cents: new_balance)
+
+      payment = Payment.create!(
         sender: nil,
         recipient: user,
         amount_cents: amount_cents,
+        fee_cents: 0,
         currency: currency,
         payment_type: "deposit",
         status: "completed",
+        description: description,
+        idempotency_key: idempotency_key
+      )
+
+      ledger_entries.create!(
+        payment: payment,
+        entry_type: "credit",
+        amount_cents: amount_cents,
+        balance_after_cents: new_balance,
         description: description
       )
     end
+    payment
   end
 
   private

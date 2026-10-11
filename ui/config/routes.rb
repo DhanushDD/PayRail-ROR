@@ -19,5 +19,8 @@ Rails.application.routes.draw do
     collection do
       post :deposit
     end
+    member do
+      post :refund
+    end
   end
 end

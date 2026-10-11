@@ -9,7 +9,7 @@ Rails.application.routes.draw do
         {
           name: "PayRail Core Payment & Authentication API",
           version: "1.0.0",
-          engine: "Ruby on Rails 8.1 (RESTful API, Sidekiq, RSpec)",
+          engine: "Ruby on Rails 8.1 (Payments Fundamentals, Sidekiq, RSpec)",
           status: "healthy",
           endpoints: {
             auth: [
@@ -21,7 +21,8 @@ Rails.application.routes.draw do
             payments: [
               "GET /api/v1/payments",
               "POST /api/v1/payments",
-              "POST /api/v1/payments/deposit"
+              "POST /api/v1/payments/deposit",
+              "POST /api/v1/payments/:id/refund"
             ]
           }
         }.to_json
@@ -40,6 +41,9 @@ Rails.application.routes.draw do
       resources :payments, only: [:index, :create] do
         collection do
           post :deposit
+        end
+        member do
+          post :refund
         end
       end
     end

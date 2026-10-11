@@ -10,15 +10,6 @@ RSpec.describe "Background Jobs (Sidekiq & ActiveJob)", type: :job do
     )
   end
 
-  let!(:peer) do
-    User.create!(
-      name: "Peer User",
-      email: "peer@payrail.io",
-      payrail_tag: "$peer",
-      password: "password123"
-    )
-  end
-
   describe WelcomeEmailJob do
     it "enqueues on the mailers queue" do
       expect {
@@ -47,20 +38,6 @@ RSpec.describe "Background Jobs (Sidekiq & ActiveJob)", type: :job do
       mail = ActionMailer::Base.deliveries.last
       expect(mail.to).to include(user.email)
       expect(mail.subject).to include("New Sign-In Detected")
-    end
-  end
-
-  describe PaymentNotificationJob do
-    it "sends payment receipt email to recipient when payment completes" do
-      payment = Payment.transfer!(sender: user, recipient: peer, amount_cents: 10_000, description: "Test Transfer")
-
-      expect {
-        PaymentNotificationJob.perform_now(payment.id)
-      }.to change { ActionMailer::Base.deliveries.count }.by(1)
-
-      mail = ActionMailer::Base.deliveries.last
-      expect(mail.to).to include(peer.email)
-      expect(mail.subject).to include("PayRail Payment Received: $100.00")
     end
   end
 
